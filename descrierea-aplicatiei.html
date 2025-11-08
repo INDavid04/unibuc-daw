@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAW Tema 1: Descrierea aplicatiei web</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="manifest" href="./site.webmanifest">
+    <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#3e433d">
+    <meta name="msapplication-TileColor" content="#3e433d">
+    <meta name="theme-color" content="#3e433d">
+</head>
+<body>
+    <header>
+        <h1>
+            <div>DAW (Dezvoltarea aplicatiilor web)</div>
+            <div>Tema 1</div>
+            <div>Descrierea aplicatiei web</div>
+            <div>Baza de date</div>
+        </h1>
+        <p>
+            <div>Irimia David</div>
+            <div>Grupa 241</div>
+            <div>9 Noiembrie 2025, 01:11</div>
+        </p>
+    </header>
+    <main>
+        <h2>Ce face aplicatia organizare evenimente?</h2>
+        <ol>
+            <li>Strange intr-un singur loc evenimentele organizate de o companie</li>
+            <li>Ofera posibilitatea de a vedea organizarea evenimentelor si a altor companii</li>
+        </ol>
+
+        <h2>Ce roluri are aplicatia organizare evenimente?</h2>
+        <ol>
+            <li>Tine o evidenta clara a ordinii desfasurarii a mai multor evenimente</li>
+            <li>Ajuta la promovarea evenimentelor</li>
+            <li>Creste publicul, intrucat acesta va sti exact unde si cand se vor tine evenimentele</li>
+        </ol>
+        
+        <h2>Cum e structurata aplicatia organizare evenimente?</h2>
+        <ol>
+            <li>Utilizatorul obisnuit intra pe website</li>
+            <li>
+                <span>Isi poate face cont fie de</span>
+                <ol>
+                    <li>Specatator, caz in care poate salva anumite preferinte, la fel ca pe youtube, ce sa apara pe prima pagina la feed</li>
+                    <li>Organizator, caz in care poate crea evenimente, grupandu-le pe maratoane</li>
+                </ol>
+            </li>
+        </ol>
+
+        <h2>Cine foloseste aplicatia organizare evenimente?</h2>
+        <ol>
+            <li>Specatorii pot folosi aplicatia pentru a sti la ce evenimente le permite timpul sa participe</li>
+            <li>Organizatorii pot folosi aplicatia pentru a oferi spectatorilor detatlii concrete cu privire la evenimentele ce vor avea loc in viitor sau care au avut loc deja</li>
+        </ol>
+        
+        <h2>Ce contine diagrama ERD a aplicatiei organizare evenimente?</h2>
+        <ul>
+            <li>
+                <span>Baza de date este formata din sapte entitati principale:</span>
+                <ul>
+                    <li>spectator: pk id_spectator</li>
+                    <li>organizator: pk id_organizator</li>
+                    <li>eveniment: pk id_eveniment fk id_organizator</li>
+                    <li>bilet: pk id_bilet, fk id_spectator, fk id_eveniment</li>
+                    <li>newsletter: pk id_newsletter, fk id_spectator</li>
+                    <li>review: pk id_review, fk id_spectator, fk id_eveniment, fk id_bilet</li>
+                    <li>preferinta: pk id_preferinta, fk id_spectator</li>
+                </ul>
+            </li>
+            <li>
+                <span>Baza de date contine urmatoarele relatii, pentru:</span>
+                <h3>Spectator</h3>
+                <ul>
+                    <li>Un spectator poate participa la unul sau la mai multe evenimente</li>
+                    <li>Un spectator poate detine unul sau mai multe bilete</li>
+                    <li>Un spectator poate fi abonat la zero sau la un singur newsletter</li>
+                    <li>Un spectator poate oferi unul sau mai multe review-uri</li>
+                    <li>Un spectator poate avea una sau mai multe preferinte</li>
+                </ul>
+                <h3>Organizator</h3>
+                <ul>
+                    <li>Un organizator se poate ocupa de unul sau de mai multe evenimente</li>
+                </ul>
+                <h3>Eveniment</h3>
+                <ul>
+                    <li>Un eveniment poate avea unul sau mai multi spectatori</li>
+                    <li>Un eveniment poate fi organizat de unul si numai un singur organizator</li>
+                </ul>
+                <h3>Bilet</h3>
+                <ul>
+                    <li>Un bilet poate fi detinut de unul si numai un singur spectator</li>
+                </ul>
+                <h3>Newsletter</h3>
+                <ul>
+                    <li>Un newsletter se poate regasi la unul sau la mai multi spectatori</li>
+                </ul>
+                <h3>Review</h3>
+                <ul>
+                    <li>Un review poate fi acordat de unul si numai un singur spectator</li>
+                </ul>
+                <h3>Preferinta</h3>
+                <ul>
+                    <li>O preferinta poate fi regasita la unul sau la mai multi spectatori</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>Care-i flow-ul (scenariile de utilizare) ale aplicatiei organizare evenimente?</h2>
+        <ul>
+            <li>
+                <span>Pasi in logare:</span>
+                <ol>
+                    <li>Utilizator neautentificat</li>
+                    <li>Utilizatorul neautentificat vede evenimentele intr-o ordine aleatoare</li>
+                    <li>
+                        <span>Spectatorul se poate autentifica fie ca</span>
+                        <ol>
+                            <li>Spectator, caz in care poate seta ce evenimente sa vada in feed</li>
+                            <li>Organizator, caz in care poate adauga evenimente</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+            <li>
+                <span>Pasi in cumparare bilet:</span>
+                <ol>
+                    <li>User logat</li>
+                    <li>Alege eveniment</li>
+                    <li>Alege tipul de bilet</li>
+                    <li>Verifica datele</li>
+                    <li>Cumpara</li>
+                </ol>
+            </li>
+            <li>
+                <span>Pasi in abonare la newsletter:</span>
+                <ol>
+                    <li>Daca e logat, cerem aprobare</li>
+                    <li>Daca nu e logat, cerem email</li>
+                </ol>
+            </li>
+        </ul>
+
+        <h2>Ce arhitectura foloseste aplicatia organizare evenimente?</h2>
+        <ol>
+            <li>Frontend: HTML, CSS(SCSS), JavaScript</li>
+            <li>Backend: PHP</li>
+            <li>Baza de date: MySQL</li>
+        </ol>
+
+        <h2>Diagrama ERD</h2>
+        <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJtrXI50=/?embedMode=view_only_without_ui&moveToViewport=289,0,720,720&embedId=820711263552" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+
+        <h2>Flow autentificare</h2>
+        <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJtsJ2vI=/?embedMode=view_only_without_ui&moveToViewport=-1571,-632,3547,1956&embedId=399224724897" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+
+        <h2>Flow cumparare bilet</h2>
+        <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJtscDHI=/?embedMode=view_only_without_ui&moveToViewport=-902,-529,2083,1148&embedId=566575844091" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+
+        <h2>Flow abonare la newsletter</h2>
+        <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJtzjm5U=/?embedMode=view_only_without_ui&moveToViewport=-1264,-969,1586,875&embedId=889688874562" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+    </main>
+    <footer>
+        <div>All rights reserved &copy; 2025</div>
+        <div>Made with love by <a href="http://indavid04.github.io/portofolio" target="_blank" rel="noopener noreferrer">INDavid04</a></div>
+    </footer>
+</body>
+</html>
