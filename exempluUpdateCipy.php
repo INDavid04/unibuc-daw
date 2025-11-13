@@ -1,6 +1,6 @@
 <?php
  
-require_once 'Database.php';
+require_once 'exempluDatabase.php';
  
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
