@@ -4,6 +4,8 @@
 /// Pattern Singleton pentru gestionarea conexiunii la baza de date folosind PDO ///
 ////////////////////////////////////////////////////////////////////////////////////
 
+// Asta face conexiunea
+
 class Database {
     /// Instanta unica a clasei Database
     private static ?Database $instance = null;
