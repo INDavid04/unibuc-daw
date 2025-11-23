@@ -44,18 +44,9 @@
 
         <?php
         session_start();
+        require_once 'database.php';
 
-        $host = "localhost";
-        $dbname = "organizare_evenimente";
-        $user = "root";
-        $pass = "";
-
-        try {
-            $pdo = new PDO("mysql:host=$host; dbname=$dbname", $user, $pass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Eroare conexiune: " . $e->getMessage());
-        }
+        $pdo = Database::getInstance()->getConnection();
 
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';

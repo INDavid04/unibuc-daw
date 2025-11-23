@@ -45,7 +45,7 @@
         <h1>Ati trimis formularul</h1>
     
         <?php
-            $pdo = new PDO("mysql:host=localhost;dbname=organizare_evenimente", "root", "");
+            $pdo = new PDO("mysql:host=localhost;dbname=dirimias_organizare_evenimente", "dirimias_organizare_evenimente", "4ZuW47xKxJDbM6tnxjaq");
 
             $username = $_POST['username'];
             $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
