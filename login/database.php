@@ -13,9 +13,9 @@ class Database {
 
     /// Configuratia bazei de date
     private string $host = "localhost";
-    private string $dbName = "organizare_evenimente";
-    private string $username = "root";
-    private string $password = "";
+    private string $dbName = "dirimias_organizare_evenimente";
+    private string $username = "dirimias_organizare_evenimente";
+    private string $password = "4ZuW47xKxJDbM6tnxjaq";
 
     /// Optiuni PDO (ATTR = Attribute i.e atribut, stare)
     private array $options = [
