@@ -124,6 +124,7 @@
             <li><a href="./">Pagina principala</a></li>
             <li><a href="./descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
             <li><a href="./curs7.php">Tema cu autentificare prin imagine</a></li>
+            <li><a href="./generare-document.php">Tema cu generare document</a></li>
         </ul>   
         <div>
             <p>All rights reserved &copy; 2025</p>
