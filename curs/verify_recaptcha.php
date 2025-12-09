@@ -1,6 +1,7 @@
 <?php 
 
-/// reCAPTCHA: https://www.google.com/recaptcha/admin/site/740695923/setup
+/// reCAPTCHA1: https://www.google.com/recaptcha/admin/site/740695923/setup
+/// reCAPTCHA2: https://www.google.com/recaptcha/admin/site/740698545/setup
 
 $returnMsg = ''; 
  
@@ -12,7 +13,7 @@ if(isset($_POST['submit'])){
         // reCAPTCHA checkbox validation
         if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){ 
             // Google reCAPTCHA API secret key 
-            $secret_key = '6LdzHyYsAAAAAIPzwuBD3xVp1RLY1iXCT4jtQ2mk'; 
+            $secret_key = '6LexKSYsAAAAAKI7sYq92qBMzry5pLS1-JZaqVFh'; 
              
             // reCAPTCHA response verification
             $verify_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret_key.'&response='.$_POST['g-recaptcha-response']); 
@@ -29,10 +30,9 @@ if(isset($_POST['submit'])){
 				$message = $_POST['content'];
              
                 #email Gmail
-				require_once('../phpmailer/class.phpmailer.php');
-				require_once('../phpmailer/mail_config.php');
+				require_once('./mail/class.phpmailer.php');
+				require_once('./mail/mail_config.php');
 				
-
 				$mailBody = "User Name: " . $name . "\n";
 				$mailBody .= "User Email: " . $email . "\n";
 				$mailBody .= "Phone: " . $phone . "\n";
@@ -47,19 +47,20 @@ if(isset($_POST['submit'])){
 				  $mail->SMTPDebug  = 3;                     
 				  $mail->SMTPAuth   = true; 
 
-				  $toEmail='dawphp2023@gmail.com';
+				  $toEmail='contact11@dirimia.daw.ssmr.ro';
 				  $nume='DAW Project';
 
-				  $mail->SMTPSecure = "ssl";                 
-				  $mail->Host       = "smtp.gmail.com";      
-				  $mail->Port       = 465;                   
+				  $mail->SMTPSecure = "tls";                 
+				  $mail->Host       = "mail.dirimia.daw.ssmr.ro";      
+				  $mail->Port       = 587;                   
 				  $mail->Username   = $username;  			// GMAIL username
 				  $mail->Password   = $password;            // GMAIL password
-				  $mail->AddReplyTo('dawphp2023@gmail.com', 'DAW - project');
+				  $mail->AddReplyTo($email, $name);
 				  $mail->AddAddress($toEmail, $nume);
 				  $mail->addCustomHeader("BCC: ".$email);
 				 
-				  $mail->SetFrom($email, $name);
+				  $mail->SetFrom($username, 'Formular Contact');
+				  $mail->From = $username;
 				  $mail->Subject = 'Formular contact';
 				  $mail->AltBody = 'To view this post you need a compatible HTML viewer!'; 
 				  $mail->MsgHTML($mailBody);
@@ -70,8 +71,8 @@ if(isset($_POST['submit'])){
 				  
                 }
                  catch (phpmailerException $e) {
-												  echo $e->errorMessage(); //error from PHPMailer
-												}
+					echo $e->errorMessage(); //error from PHPMailer
+				}
 				 
             } 
         }

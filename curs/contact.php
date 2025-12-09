@@ -10,17 +10,17 @@
 	<!-- Captcha -->
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
-    <link rel="manifest" href="./favicon/site.webmanifest">
-    <link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#3e433d">
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon/favicon-16x16.png">
+    <link rel="manifest" href="../favicon/site.webmanifest">
+    <link rel="mask-icon" href="../favicon/safari-pinned-tab.svg" color="#3e433d">
     <meta name="msapplication-TileColor" content="#3e433d">
     <meta name="theme-color" content="#3e433d">
 </head>
 <body>
     <header>
-        <a href="./">
+        <a href="../">
             <svg width="700.000000pt" height="700.000000pt" viewBox="0 0 700.000000 700.000000">
             <g transform="translate(0.000000,700.000000) scale(0.100000,-0.100000)"
             fill="currentColor" stroke="none">
@@ -33,11 +33,11 @@
         </a>
         <nav>
             <ul>
-                <li><a href="./descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
+                <li><a href="../descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
                 <?php if (!isset($_SESSION['username'])): ?>
-                    <li><a href="./login/account.php">Creeaza cont / Autentifica-te</a></li>
+                    <li><a href="../login/account.php">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="./login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -48,6 +48,7 @@
 			<div class="content">
 				<h1>Formular contact</h1>
 				<p>Te rugam sa ne transmiti informatiile de mai jos:</p>
+                <p>Pagina realizata in cadrul cursului cu numarul 11</p>
 				<div id="message">
 					<form action="verify_recaptcha.php" method="post">
 						<div class="label">Nume:</div>
@@ -66,21 +67,22 @@
 						<div class="field">			
 							<textarea id="comment-content" name="content"></textarea>			
 						</div>
-						<div class="g-recaptcha" data-sitekey="6LdzHyYsAAAAAHN7Oy80oj1I_NE_xqKaT1othHDe"></div>
+						<div class="g-recaptcha" data-sitekey="6LexKSYsAAAAAC-vA7ryGqTZJ_aQKWSVFE4qyBcG"></div>
 						<input class="btn btn-info" type="submit" name="submit" value="SUBMIT" >
 					</form>
 				</div>		
-			</div><!-- content -->
-		</div><!-- central -->	
+			</div>
+		</div>
     </main>
 
     <footer>
         <h2>Mergi catre</h2>
         <ul>
-            <li><a href="./">Pagina principala</a></li>
-            <li><a href="./descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
-            <li><a href="./autentificare-prin-imagine.php">Tema cu autentificare prin imagine</a></li>
-            <li><a href="./generare-document.php">Tema cu generare document</a></li>
+            <li><a href="../">Pagina principala</a></li>
+            <li><a href="../descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
+            <li><a href="../autentificare-prin-imagine.php">Tema cu autentificare prin imagine</a></li>
+            <li><a href="../generare-document.php">Tema cu generare document</a></li>
+            <li><a href="./contact.php">Contact</a></li>
         </ul>
         <div>
             <p>All rights reserved &copy; 2025</p>
