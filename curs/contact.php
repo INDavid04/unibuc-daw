@@ -5,8 +5,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IND | DAW Organizare Evenimente</title>
-    <link rel="stylesheet" href="./css/styles.css">
+    <title>IND | DAW Contact Captcha</title>
+    <link rel="stylesheet" href="../css/styles.css">
+	<!-- Captcha -->
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
@@ -42,40 +44,34 @@
     </header>
 
     <main>
-        <h1>DAW: Dezvoltarea aplicatiilor web</h1>
-        <p>Tema: Organizare evenimente</p>
-        <p>Nume: Irimia David</p>
-        <p>Grupa: 241</p>
-
-        <h2>Tema 1: Descrierea aplicatiei web. Baza de date <br> (9 Noiembrie 2025, 01:11)</h2>
-        <a href="./descrierea-aplicatiei.php">Vezi descrierea aplicatiei web</a>
-        
-        <h2>Tema 2: CRUD. Create. Read. Update. Delete. Login <br> (22 Noiembrie 2025, 02:22)</h2>
-        <a href="./eveniment/adauga.php">Adauga un eveniment</a>
-        <a href="./eveniment/afiseaza.php">Afiseaza evenimentele organizate de mine</a>
-
-        <h2>Evenimente</h2>
-        <?php
-            require_once './login/database.php';
-            $pdo = Database::getInstance()->getConnection();
-
-            $stmt = $pdo->prepare("SELECT * FROM eveniment");
-            $stmt->execute();
-            $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        ?>
-
-        <ol>
-            <?php foreach ($events as $event): ?>
-            <li>
-                <p><?= htmlspecialchars($event['nume']) ?></p>
-                <ul>
-                    <li>Id eveniment: <?= $event['idEveniment'] ?></li>
-                    <li>Locatie eveniment: <?= $event['locatie'] ?></li>
-                    <li>Data eveniment: <?= $event['data'] ?></li>
-                </ul>
-            </li>
-            <?php endforeach; ?>
-        </ol>
+        <div id="central">
+			<div class="content">
+				<h1>Formular contact</h1>
+				<p>Te rugam sa ne transmiti informatiile de mai jos:</p>
+				<div id="message">
+					<form action="verify_recaptcha.php" method="post">
+						<div class="label">Nume:</div>
+							<div class="field">
+								<input type="text" id="name" name="name" class="required" aria-required="true" required>
+							</div>
+						<div class="label">Email:</div>
+						<div class="field">			
+							<input type="email" id="email" name="email" class="required email" aria-required="true" required>
+						</div>
+						<div class="label">Telefon:</div>
+						<div class="field">			
+							<input type="tel" id="phone" name="phone" class="required phone" aria-required="true" required>
+						</div>
+						<div class="label">Mesaj:</div>
+						<div class="field">			
+							<textarea id="comment-content" name="content"></textarea>			
+						</div>
+						<div class="g-recaptcha" data-sitekey="6LdzHyYsAAAAAHN7Oy80oj1I_NE_xqKaT1othHDe"></div>
+						<input class="btn btn-info" type="submit" name="submit" value="SUBMIT" >
+					</form>
+				</div>		
+			</div><!-- content -->
+		</div><!-- central -->	
     </main>
 
     <footer>

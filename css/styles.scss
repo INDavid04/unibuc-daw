@@ -6,7 +6,7 @@ a { display: block; padding: 0.5rem 0; color: #faebd7 }
 
 a:hover, a:focus { text-decoration: none; color: #00bfff; text-shadow: 0 0 3rem #333; transition: 0.2s; }
 
-input { padding: 0.5rem; background-color: #faebd7; color: #333; border: none; border-radius: 1rem; }
+input, textarea { padding: 0.5rem; background-color: #faebd7; color: #333; border: none; border-radius: 1rem; }
     input::file-selector-button { border: none; border-radius: 0.5rem; background-color: #333; color: #faebd7; }
 
 button { padding: 1rem; border: 0.2rem solid #faebd7; border-radius: 2rem; background-color: #333; color: #faebd7; }
