@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IND | DAW Inregistreaza spectator</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <!-- Captcha -->
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
@@ -52,8 +54,10 @@
 
             <label for="password">Parola:</label>
             <input type="password" id="password" name="password" required>
-
-            <button type="submit">Inregistreaza-te</button>
+            <!-- reCAPTCHA -->
+            <div class="g-recaptcha" data-sitekey="6LcVji4sAAAAAO4E5UzGBn4w6Ris9AYjMAcEom9y"></div>
+            <button type="submit" name="submit">Inregistreaza-te</button>
+            
         </form>
     </main>
 
