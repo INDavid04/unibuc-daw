@@ -55,7 +55,7 @@
             <label for="locatie">Locatie eveniment:</label>
             <input type="text" name="locatie" required>
             <label for="data">Data eveniment:</label>
-            <input type="date" name="data" required>
+            <input type="date" name="data_eveniment" id="data_eveniment" min="<?php echo date('Y-m-d');?>" required>
             <button type="submit">Adauga eveniment</button>
         </form>
     </main>
