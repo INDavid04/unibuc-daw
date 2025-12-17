@@ -45,22 +45,50 @@
         <h1>Ati trimis formularul</h1>
     
         <?php
-            $pdo = new PDO("mysql:host=localhost;dbname=dirimias_organizare_evenimente", "dirimias_organizare_evenimente", "4ZuW47xKxJDbM6tnxjaq");
+            /// reCAPTCHA5: https://www.google.com/recaptcha/admin/site/741250365/setup
 
-            $username = $_POST['username'];
-            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            
-            /// Verifica da utilizatorul exista deja
-            $stmt = $pdo->prepare("select * from spectator where username = ?");
-            $stmt->execute([$username]);
-            if ($stmt->rowCount() > 0) {
-                die("Acest username este deja folosit");
+            if(isset($_POST['submit'])){ 
+                
+                // Form fields validation check
+                if(!empty($_POST['username']) && !empty($_POST['email']) && !empty($_POST['password'])){ 
+
+                    // reCAPTCHA checkbox validation
+                    if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){ 
+                        // Google reCAPTCHA API secret key 
+                        $secret_key = '6Lc9lS4sAAAAAHmz4uzQAJV9bry3Htpv5LM_cEqr'; 
+                        
+                        // reCAPTCHA response verification
+                        $verify_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret_key.'&response='.$_POST['g-recaptcha-response']); 
+                        
+                        // Decode reCAPTCHA response 
+                        $verify_response = json_decode($verify_captcha); 
+                        
+                        // Check if reCAPTCHA response returns success 
+                        if($verify_response->success){ 
+                            
+                            $pdo = new PDO("mysql:host=localhost;dbname=dirimias_organizare_evenimente", "dirimias_organizare_evenimente", "4ZuW47xKxJDbM6tnxjaq");
+
+                            $username = $_POST['username'];
+                            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                            
+                            /// Verifica da utilizatorul exista deja
+                            $stmt = $pdo->prepare("select * from spectator where username = ?");
+                            $stmt->execute([$username]);
+                            if ($stmt->rowCount() > 0) {
+                                die("Acest username este deja folosit");
+                            }
+
+                            $stmt = $pdo->prepare("insert into organizator (username, password) values (?, ?)");
+                            $stmt->execute([$username, $password]);
+
+                            echo 'Contul de organizator a fost creat cu succes. <a href="./account.php">De acum va puteti autentifica cu username si password setate</a>';
+                            
+                        } 
+                    } else { 
+                        echo 'Nu s-a putut adauga contul de organizator intrucat nu s-a bifat reCAPTCHA';
+                    } 
+                } 
             }
-
-            $stmt = $pdo->prepare("insert into organizator (username, password) values (?, ?)");
-            $stmt->execute([$username, $password]);
-
-            echo 'Contul de organizator a fost creat cu succes. <a href="./account.php">De acum va puteti autentifica cu username si password setate</a>';
         ?>
     </main>
 
