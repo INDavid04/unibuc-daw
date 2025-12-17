@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IND | DAW Adauga eveniment</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <!-- Captcha -->
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
@@ -56,7 +58,9 @@
             <input type="text" name="locatie" required>
             <label for="data_eveniment">Data eveniment:</label>
             <input type="date" name="data_eveniment" id="data_eveniment" min="<?php echo date('Y-m-d');?>" required>
-            <button type="submit">Adauga eveniment</button>
+            <!-- reCAPTCHA -->
+            <div class="g-recaptcha" data-sitekey="6Lc-hy4sAAAAAERi3w6XAkSCFstfdGyN7t2O0h4e"></div>
+            <button type="submit" name="submit">Adauga eveniment</button>
         </form>
     </main>
 
