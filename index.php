@@ -6,13 +6,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IND | DAW Organizare Evenimente</title>
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
-    <link rel="manifest" href="./favicon/site.webmanifest">
-    <link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#3e433d">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="./assets/favicon/site.webmanifest">
+    <link rel="mask-icon" href="./assets/favicon/safari-pinned-tab.svg" color="#3e433d">
     <meta name="msapplication-TileColor" content="#3e433d">
     <meta name="theme-color" content="#3e433d">
 </head>
@@ -31,9 +31,9 @@
         </a>
         <nav>
             <ul>
-                <li><a href="./descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
+                <li><a href="./descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
                 <?php if (!isset($_SESSION['username'])): ?>
-                    <li><a href="./login/account.php">Creeaza cont / Autentifica-te</a></li>
+                    <li><a href="./login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
                     <li><a href="./login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
                 <?php endif; ?>
@@ -48,11 +48,14 @@
         <p>Grupa: 241</p>
 
         <h2>Tema 1: Descrierea aplicatiei web. Baza de date <br> (9 Noiembrie 2025, 01:11)</h2>
-        <a href="./descrierea-aplicatiei.php">Vezi descrierea aplicatiei web</a>
+        <a href="./descrierea-aplicatiei/">Vezi descrierea aplicatiei web</a>
         
         <h2>Tema 2: CRUD. Create. Read. Update. Delete. Login <br> (22 Noiembrie 2025, 02:22)</h2>
-        <a href="./eveniment/adauga.php">Adauga un eveniment</a>
-        <a href="./eveniment/afiseaza.php">Afiseaza evenimentele organizate de mine</a>
+        <?php if (!isset($_SESSION['username'])): ?>
+            <a href="./login/">Creeaza cont / Autentifica-te pentru a afisa evenimentele organizate de tine</a>
+        <?php else: ?>
+            <a href="./eveniment/">Afiseaza evenimentele organizate de mine</a>
+        <?php endif; ?>
 
         <h2>Evenimente</h2>
         <?php
@@ -82,10 +85,10 @@
         <h2>Mergi catre</h2>
         <ul>
             <li><a href="./">Pagina principala</a></li>
-            <li><a href="./descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
-            <li><a href="./autentificare-prin-imagine.php">Tema cu autentificare prin imagine</a></li>
-            <li><a href="./generare-document.php">Tema cu generare document</a></li>
-            <li><a href="./curs/contact.php">Contact</a></li>
+            <li><a href="./descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
+            <li><a href="./curs-autentificare-prin-imagine/">Tema cu autentificare prin imagine</a></li>
+            <li><a href="./curs-generare-document/">Tema cu generare document</a></li>
+            <li><a href="./curs-contact/">Tema cu captcha pe formularul de contact</a></li>
         </ul>
         <div>
             <p>All rights reserved &copy; 2025</p>

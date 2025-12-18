@@ -31,9 +31,9 @@
         </a>
         <nav>
             <ul>
-                <li><a href="../descrierea-aplicatiei">Descrierea aplicatiei</a></li>
+                <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
                 <?php if (!isset($_SESSION['username'])): ?>
-                    <li><a href="../login">Creeaza cont / Autentifica-te</a></li>
+                    <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
                     <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
                 <?php endif; ?>
@@ -128,10 +128,10 @@
         <h2>Mergi catre</h2>
         <ul>
             <li><a href="../">Pagina principala</a></li>
-            <li><a href="../curs-descrierea-aplicatiei">Descrierea aplicatiei</a></li>
-            <li><a href="../curs-autentificare-prin-imagine">Tema cu autentificare prin imagine</a></li>
-            <li><a href="../curs-generare-document">Tema cu generare document</a></li>
-            <li><a href="../curs-contact">Tema cu captcha pe formularul de contact</a></li>
+            <li><a href="../curs-descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
+            <li><a href="../curs-autentificare-prin-imagine/">Tema cu autentificare prin imagine</a></li>
+            <li><a href="../curs-generare-document/">Tema cu generare document</a></li>
+            <li><a href="../curs-contact/">Tema cu captcha pe formularul de contact</a></li>
         </ul>
         <div>
             <p>All rights reserved &copy; 2025</p>
