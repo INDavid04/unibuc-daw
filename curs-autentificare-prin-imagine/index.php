@@ -6,19 +6,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IND | DAW Autentificare prin imagine</title>
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
-    <link rel="manifest" href="./favicon/site.webmanifest">
-    <link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#3e433d">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
+    <link rel="mask-icon" href="../assets/favicon/safari-pinned-tab.svg" color="#3e433d">
     <meta name="msapplication-TileColor" content="#3e433d">
     <meta name="theme-color" content="#3e433d">
 </head>
 <body>
     <header>
-        <a href="./">
+        <a href="../">
             <svg width="700.000000pt" height="700.000000pt" viewBox="0 0 700.000000 700.000000">
             <g transform="translate(0.000000,700.000000) scale(0.100000,-0.100000)"
             fill="currentColor" stroke="none">
@@ -31,21 +31,27 @@
         </a>
         <nav>
             <ul>
-                <li><a href="./descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
+                <li><a href="../descrierea-aplicatiei">Descrierea aplicatiei</a></li>
                 <?php if (!isset($_SESSION['username'])): ?>
-                    <li><a href="./login/account.php">Creeaza cont / Autentifica-te</a></li>
+                    <li><a href="../login">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="./login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>
     </header>
 
     <main>
-        <h1>DAW Autentificare prin imagine <br> (Cursul 7, Exercitiul 7)</h1>
+        <h1>DAW Autentificare prin imagine</h1>
+        <p>Cursul 7, Exercitiul 7</p>
         <p>Cerinta: Autentificare folosind o imagine</p>
         <!-- Am folosit enctype="multipart" intrucat incarcam un fisier (poza pentru autentificare) -->
-        <form action="autentificare-prin-imagine.php" method="POST" enctype="multipart/form-data">
+
+        <!-------------->
+        <!-- Formular -->
+        <!-------------->
+
+        <form action="./" method="POST" enctype="multipart/form-data">
             <div>
                 <label for="username">Username: </label>
                 <input type="text" name="username" id="username" required>
@@ -121,11 +127,12 @@
     <footer>
         <h2>Mergi catre</h2>
         <ul>
-            <li><a href="./">Pagina principala</a></li>
-            <li><a href="./descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
-            <li><a href="./curs7.php">Tema cu autentificare prin imagine</a></li>
-            <li><a href="./generare-document.php">Tema cu generare document</a></li>
-        </ul>   
+            <li><a href="../">Pagina principala</a></li>
+            <li><a href="../curs-descrierea-aplicatiei">Descrierea aplicatiei</a></li>
+            <li><a href="../curs-autentificare-prin-imagine">Tema cu autentificare prin imagine</a></li>
+            <li><a href="../curs-generare-document">Tema cu generare document</a></li>
+            <li><a href="../curs-contact">Tema cu captcha pe formularul de contact</a></li>
+        </ul>
         <div>
             <p>All rights reserved &copy; 2025</p>
             <p>Made with love by <a href="http://indavid04.github.io/portofolio" target="_blank" rel="noopener noreferrer">INDavid04</a></p>
