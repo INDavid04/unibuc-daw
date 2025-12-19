@@ -4,7 +4,7 @@
 /// Data: 25 Noiembrie 2025, 21:07-00:22
 
 /// Folosim clasa fpdf
-require('./fpdf186/fpdf.php');
+require('../assets/fpdf186/fpdf.php');
 
 /// Dimensiunea imaginea pare sa fie 613x613px (613px is approximately 155.7 mm at 96 PPI")
 $pdf = new FPDF('P', 'mm', array(155.7, 155.7));
