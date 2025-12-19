@@ -1,20 +1,18 @@
-<?php
-session_start();
-?>
+<?php session_start(); ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IND | DAW Afiseaza evenimentele mele</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <title>IND | DAW Evenimentele mele</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../favicon/favicon-16x16.png">
-    <link rel="manifest" href="../favicon/site.webmanifest">
-    <link rel="mask-icon" href="../favicon/safari-pinned-tab.svg" color="#3e433d">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
+    <link rel="mask-icon" href="../assets/favicon/safari-pinned-tab.svg" color="#3e433d">
     <meta name="msapplication-TileColor" content="#3e433d">
     <meta name="theme-color" content="#3e433d">
 </head>
@@ -33,9 +31,9 @@ session_start();
         </a>
         <nav>
             <ul>
-                <li><a href="../descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
+                <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
                 <?php if (!isset($_SESSION['username'])): ?>
-                    <li><a href="../login/account.php">Creeaza cont / Autentifica-te</a></li>
+                    <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
                     <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
                 <?php endif; ?>
@@ -44,7 +42,8 @@ session_start();
     </header>
 
     <main>
-        <h1>Afiseaza evenimentele organizate de mine</h1>
+        <h1>Evenimentele mele</h1>
+        <a href="./adauga.php">Adauga un eveniment</a>
         <?php 
         require_once '../login/database.php';
 
@@ -58,7 +57,7 @@ session_start();
         if(isset($_GET['delete'])) {
             $stmt = $pdo->prepare("DELETE FROM eveniment WHERE idEveniment = ? AND idOrganizator = ?");
             $stmt->execute([$_GET['delete'], $_SESSION['idOrganizator']]);
-            header("Location: ./afiseaza.php");
+            header("Location: ./");
             exit;
         }
 
@@ -77,7 +76,7 @@ session_start();
                     <li>Data: <?= htmlspecialchars($event['data']) ?></li>
                 </ul>
                 <a href="./modifica.php?id=<?= $event['idEveniment'] ?>">Modifica evenimentul</a>
-                <a href="./afiseaza.php?delete=<?= $event['idEveniment'] ?>" onclick="return confirm('Sigur doriti sa stergeti evenimentul?');">Sterge evenimentul</a>
+                <a href="./index.php?delete=<?= $event['idEveniment'] ?>" onclick="return confirm('Sigur doriti sa stergeti evenimentul?');">Sterge evenimentul</a>
             </li>
             <?php endforeach; ?>
         </ol>
@@ -87,9 +86,11 @@ session_start();
         <h2>Mergi catre</h2>
         <ul>
             <li><a href="../">Pagina principala</a></li>
-            <li><a href="../descrierea-aplicatiei.php">Descrierea aplicatiei</a></li>
-            <li><a href="../autentificare-prin-imagine.php">Tema cu autentificare prin imagine</a></li>
-        </ul>   
+            <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
+            <li><a href="../curs-autentificare-prin-imagine/">Tema cu autentificare prin imagine</a></li>
+            <li><a href="../curs-generare-document/" target="_blank" rel="noopener noreferrer">Tema cu generare document</a></li>
+            <li><a href="../curs-contact/">Tema cu captcha pe formularul de contact</a></li>
+        </ul>
         <div>
             <p>All rights reserved &copy; 2025</p>
             <p>Made with love by <a href="http://indavid04.github.io/portofolio" target="_blank" rel="noopener noreferrer">INDavid04</a></p>
