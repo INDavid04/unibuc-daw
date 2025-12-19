@@ -128,7 +128,7 @@
         <h2>Mergi catre</h2>
         <ul>
             <li><a href="../">Pagina principala</a></li>
-            <li><a href="../curs-descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
+            <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
             <li><a href="../curs-autentificare-prin-imagine/">Tema cu autentificare prin imagine</a></li>
             <li><a href="../curs-generare-document/" target="_blank" rel="noopener noreferrer">Tema cu generare document</a></li>
             <li><a href="../curs-contact/">Tema cu captcha pe formularul de contact</a></li>
