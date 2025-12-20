@@ -1,4 +1,30 @@
-<?php session_start(); ?>
+<?php 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+session_start(); 
+require_once './database.php';
+
+$pdo = Database::getInstance()->getConnection();
+
+$nume = $_POST['nume'] ?? '';
+$parola = $_POST['parola'] ?? '';
+$eroare = '';
+
+/// Cauta in tabelul utilizator
+$sql = "select * from utilizator where nume = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$nume]);
+$utilizator = $stmt->fetch(PDO::FETCH_ASSOC);
+if ($utilizator && isset($utilizator['parola']) && password_verify($parola, $utilizator['parola'])) {
+    $_SESSION['id_utilizator'] = $utilizator['id_utilizator'];
+
+    header("Location: ../");
+    exit;
+} else {
+    $eroare = 'Email sau parola grestita. <a href="./">Incearca alt nume de utilizator sau alta parola</a>';
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,10 +58,10 @@
         <nav>
             <ul>
                 <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
-                <?php if (!isset($_SESSION['username'])): ?>
+                <?php if (!isset($_SESSION['nume'])): ?>
                     <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['nume']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -45,47 +71,9 @@
         <h1>Autentifica utilizator</h1>
 
         <?php
-        session_start();
-        require_once './database.php';
-
-        $pdo = Database::getInstance()->getConnection();
-
-        $username = $_POST['username'] ?? '';
-        $password = $_POST['password'] ?? '';
-
-        if (!$username || !$password) {
-            die("Introduceti username si password");
-        }
-
-        /// Cauta in tabelul spectator
-        $sql = "select * from spectator where username = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$username]);
-        $spectator = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($spectator && isset($spectator['password']) && password_verify($password, $spectator['password'])) {
-            $_SESSION['idSpectator'] = $spectator['idSpectator'];
-            $_SESSION['username'] = $spectator['username'];
-            $_SESSION['role'] = "spectator";
-
-            header("Location: ../");
-            exit;
-        }
-
-        /// Cauta in tabelul organizator
-        $sql = "select * from organizator where username = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$username]);
-        $organizator = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($organizator && isset($organizator['password']) && password_verify($password, $organizator['password'])) {
-            $_SESSION['idOrganizator'] = $organizator['idOrganizator'];
-            $_SESSION['username'] = $organizator['username'];
-            $_SESSION['role'] = "organizator";
-
-            header("Location: ../");
-            exit;
-        }
-
-        echo 'Email sau parola grestita. <a href="./">Incearca alt username sau alt password</a>';
+            if (!empty($eroare)) {
+                echo $eroare;
+            }
         ?>
     </main>
 
