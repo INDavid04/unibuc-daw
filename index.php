@@ -1,4 +1,6 @@
-<?php session_start(); ?>
+<?php session_start(); 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,19 +54,33 @@
         
         <h2>Tema 2: CRUD. Create. Read. Update. Delete. Login <br> (22 Noiembrie 2025, 02:22)</h2>
         <?php
+            require_once './login/database.php';
             $db = Database::GetInstance()->getConnection();
-            $eOrganizator = $db->prepare("select id_organizator form organizator where username")
+
+            /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
+            $eAutentificat = $_SESSION['id_utilizator'] ?? null;
+            
+            if ($eAutentificat) {
+                $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
+                $eOrganizator->execute([$_SESSION['id_utilizator']]);
+                if($eOrganizator->fetch()) {
+                    ?>
+                        <a href="./eveniment/">Vezi evenimentele tale</a>
+                    <?php
+                } else {
+                    ?>
+                        <a href="./bilet/">Vezi biletele tale</a>
+                    <?php
+                }
+            } else {
+                ?>
+                    <a href="./login/">Creeaza cont / autentifica-te pentru a vedea evenimentele sau biletele tale</a>
+                <?php
+            }
         ?>
         
-        <?php if (!isset($_SESSION['nume'])): ?>
-            <a href="./login/">Creeaza cont / Autentifica-te pentru a afisa evenimentele organizate de tine</a>
-        <?php else: ?>
-            <a href="./eveniment/">Afiseaza evenimentele organizate de mine</a>
-        <?php endif; ?>
-
         <h2>Evenimente</h2>
         <?php
-            require_once './login/database.php';
             $pdo = Database::getInstance()->getConnection();
 
             $stmt = $pdo->prepare("SELECT * FROM eveniment");
@@ -75,11 +91,10 @@
         <ol>
             <?php foreach ($events as $event): ?>
             <li>
-                <p><?= htmlspecialchars($event['nume']) ?></p>
                 <ul>
-                    <li>Id eveniment: <?= $event['idEveniment'] ?></li>
-                    <li>Locatie eveniment: <?= $event['locatie'] ?></li>
-                    <li>Data eveniment: <?= $event['data'] ?></li>
+                    <li><b>Denumire</b>: <?= htmlspecialchars($event['denumire']) ?></li>
+                    <li><b>Organizator</b>: <?= $_SESSION['nume']?></li>
+                    <li><b>Numar</b>: <?= $event['id_eveniment'] ?></li>
                 </ul>
             </li>
             <?php endforeach; ?>

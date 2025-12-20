@@ -47,7 +47,7 @@
         <h1>Inregistreaza cont organizator</h1>
         <p>Completeaza formularul de mai jos</p>
         <form action="./process-register-organizer.php" method="POST">
-            <label for="nume">Nume utilizator:</label>
+            <label for="nume">Nume:</label>
             <input type="text" id="nume" name="nume" maxlength="80" placeholder="John Doe" required>
 
             <label for="mail">Email:</label>

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IND | DAW Modifica eveniment</title>
+    <title>IND | DAW Evenimentele mele</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
@@ -42,53 +42,60 @@
     </header>
 
     <main>
-        <h1>Modifica eveniment</h1>
+        <h1>Evenimentele mele</h1>
+        <a href="./adauga.php">Adauga un eveniment</a>
         <?php 
-        require_once '../login/database.php';
+            require_once '../login/database.php';
+            $db = Database::GetInstance()->getConnection();
 
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'organizator') {
-            die('Acces interzis! Numai organizatorii pot modifica evenimente.<a href="../">Intoarce-te la prima pagina</a>');
-        }
+            /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
+            $eAutentificat = $_SESSION['id_utilizator'] ?? null;
 
-        $pdo = Database::getInstance()->getConnection();
+            if ($eAutentificat) {
+                $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
+                $eOrganizator->execute([$_SESSION['id_utilizator']]);
+                if($eOrganizator->fetch()) {
+                    $pdo =  Database::getInstance()->getConnection();
 
-        $id = $_GET['id'] ?? null;
-        if (!$id) {
-            die("Evenimentul nu exista");
-        }
+                    /// Sterge evenimentul
+                    if(isset($_GET['delete'])) {
+                        $stmt = $pdo->prepare("DELETE FROM eveniment WHERE id_eveniment = ? AND id_organizator = ?");
+                        $stmt->execute([$_GET['delete'], $_SESSION['id_utilizator']]);
+                        header("Location: ./");
+                        exit;
+                    }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $stmt = $pdo->prepare("UPDATE eveniment SET nume = ?, locatie = ?, data = ? WHERE idEveniment = ? AND idOrganizator = ?");
-            $stmt->execute([
-                $_POST['nume'],
-                $_POST['locatie'],
-                $_POST['data'],
-                $id,
-                $_SESSION['idOrganizator']
-            ]);
-            header("Location: ./");
-            exit;
-        }
-
-        $stmt = $pdo->prepare("SELECT * FROM eveniment WHERE idEveniment = ? AND idOrganizator = ?");
-        $stmt->execute([$id, $_SESSION['idOrganizator']]);
-        $event = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$event) {
-            die("Evenimentul nu exista sau nu ai permisiunea de a-l edita");
-        }
+                    /// Selecteaza toate evenimentele organizatorului autentificat
+                    $stmt = $pdo->prepare("SELECT * FROM eveniment WHERE id_utilizator = ?");
+                    $stmt->execute([$_SESSION['id_utilizator']]);
+                    $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    ?>
+                        <ol>
+                            <?php foreach ($events as $event): ?>
+                                <li>
+                                    <ul>
+                                        <li><b>Denumire</b>: <?= htmlspecialchars($event['denumire']) ?></li>
+                                        <li><b>Organizator</b>: <?= $_SESSION['nume']?></li>
+                                        <li><b>Numar</b>: <?= $event['id_eveniment'] ?></li>
+                                    </ul>
+                                    <a href="./modifica.php?id=<?= $event['id_eveniment'] ?>">Modifica</a>
+                                    <span> | </span>
+                                    <a href="./index.php?delete=<?= $event['id_eveniment'] ?>" onclick="return confirm('Sigur doriti sa stergeti evenimentul?');">Sterge</a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ol>
+                    <?php
+                } else {
+                    ?>
+                        <a href="./bilet/">Spectatorii nu pot crea evenimente</a>
+                    <?php
+                }
+            } else {
+                ?>
+                    <a href="./login/">Nu sunteti autentificat</a>
+                <?php
+            }
         ?>
-
-        <form method="POST">
-            <label for="nume">Nume eveniment:</label>
-            <input type="text" name="nume" value=<?= htmlspecialchars($event['nume']) ?> required>
-            <label for="locatie">Locatie eveniment:</label>
-            <input type="text" name="locatie" value=<?= htmlspecialchars($event['locatie']) ?> required>
-            <label for="data">Data eveniment:</label>
-            <input type="date" name="data" value=<?= htmlspecialchars($event['data']) ?> required>
-            <button type="submit">Salveaza modificarile</button>
-        </form>
-
-        <a href="./">Intoarce-te la lista evenimentelor tale</a>
     </main>
 
     <footer>

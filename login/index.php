@@ -50,7 +50,7 @@
             <input type="text" name="nume" id="nume" required>
             
             <label for="parola">Password:</label>
-            <input type="parola" name="parola" id="parola" required>
+            <input type="password" name="parola" id="parola" required>
 
             <button type="submit">Autentifica-te</button>
         </form>

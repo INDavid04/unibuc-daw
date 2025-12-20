@@ -1,4 +1,127 @@
-<?php session_start(); ?>
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+session_start();
+require_once '../login/database.php';
+$db = Database::GetInstance()->getConnection();
+$mesaj = '';
+
+/// reCAPTCHA3: https://www.google.com/recaptcha/admin/site/741246782/setup
+
+if(isset($_POST['submit'])){ 
+    
+    // Form fields validation check
+    if(!empty($_POST['denumire']) && !empty($_POST['denumire_locatie']) && !empty($_POST['incepe'])){ 
+        
+        // reCAPTCHA checkbox validation
+        if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){ 
+            // Google reCAPTCHA API secret key 
+            $secret_key = '6Lc-hy4sAAAAAFfPwr6j2hMwo_aJVoSgKC2WDVDk'; 
+            
+            // reCAPTCHA response verification
+            $verify_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret_key.'&response='.$_POST['g-recaptcha-response']); 
+            
+            // Decode reCAPTCHA response 
+            $verify_response = json_decode($verify_captcha); 
+            
+            // Check if reCAPTCHA response returns success 
+            if ($verify_response->success) { 
+
+                /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
+                $eAutentificat = $_SESSION['id_utilizator'] ?? null;
+
+                if ($eAutentificat) {
+                    $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
+                    $eOrganizator->execute([$_SESSION['id_utilizator']]);
+                    
+                    /// Doar organizatorul poate adauga evenimente
+                    if ($eOrganizator->fetch()) {
+                        /// Organizatorul poate adauga doar evenimente noi
+                        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                            $data_curenta = date('Y-m-d\TH:i');
+                            $incepe = $_POST['incepe'];
+                            $termina = $_POST['termina'];
+                            if ($incepe < $data_curenta) {
+                                $mesaj = "Ne pare rau insa nu puteti adauga evenimente a caror data este mai veche decat astazi ($incepe a fost inainte de $data_curenta) <a href='./adauga.php'>Adauga alt eveniment</a>";
+                            } else if ($termina < $incepe) {
+                                $mesaj = "Ne pare rau insa nu puteti termina un eveniment mai devreme decat inceperea acestuia ($termina a fost inainte de $incepe) <a href='./adauga.php'>Adauga alt eveniment</a>";
+                            } else {
+                                /// Insereaza denumire, id_utilizator in eveniment
+                                $stmt = $db->prepare("insert into eveniment (denumire, id_utilizator) values (?, ?)");
+                                $stmt->execute([$_POST['denumire'], $_SESSION['id_utilizator']]);
+
+                                /// Preia id-ul generat automat pentru eveniment
+                                $id_eveniment = $db->lastInsertId();
+
+                                /// Insereaza denumire_tara in tara
+                                $stmt = $db->prepare("select id_tara from tara where denumire = ?");
+                                $stmt->execute([$_POST['denumire_tara']]);
+                                $tara = $stmt->fetch();
+                                if ($tara) {
+                                    $id_tara = $tara['id_tara'];
+                                } else {
+                                    $stmt = $db->prepare("insert into tara (denumire) values (?)");
+                                    $stmt->execute([$_POST['denumire_tara']]);
+                                    $id_tara = $db->lastInsertId();
+                                }
+
+                                /// Insereaza denumire_judet in judet
+                                $stmt = $db->prepare("select id_judet from judet where denumire = ?");
+                                $stmt->execute([$_POST['denumire_judet']]);
+                                $judet = $stmt->fetch();
+                                if ($judet) {
+                                    $id_judet = $judet['id_judet'];
+                                } else {
+                                    $stmt = $db->prepare("insert into judet (denumire, id_tara) values (?, ?)");
+                                    $stmt->execute([$_POST['denumire_judet'], $id_tara]);
+                                    $id_judet = $db->lastInsertId();
+                                }
+
+                                /// Insereaza denumire_locatie in locatie
+                                $stmt = $db->prepare("select id_locatie from locatie where denumire = ?");
+                                $stmt->execute([$_POST['denumire_locatie']]);
+                                $locatie = $stmt->fetch();
+                                if ($locatie) {
+                                    $id_locatie = $locatie['id_locatie'];
+                                } else {
+                                    $stmt = $db->prepare("insert into locatie (denumire, id_judet) values (?, ?)");
+                                    $stmt->execute([$_POST['denumire_locatie'], $id_judet]);
+                                    $id_locatie = $db->lastInsertId();
+                                }
+                                
+                                /// Insereaza id_eveniment, id_locatie in tabelul eveniment_locatie
+                                $stmt = $db->prepare("insert into eveniment_locatie (id_eveniment, id_locatie) values (?, ?)");
+                                $stmt->execute([$id_eveniment, $id_locatie]);
+
+                                /// Insereaza incepe, termina in tabelul istoric
+                                $stmt = $db->prepare("insert into istoric (incepe, termina) values (?, ?)");
+                                $stmt->execute([$_POST['incepe'], $_POST['termina']]);
+
+                                /// Preia id-ul generat automat pentru istoric
+                                $id_istoric = $db->lastInsertId();
+
+                                /// Insereaza id_eveniment, id_istoric in eveniment_istoric
+                                $stmt = $db->prepare("insert into eveniment_istoric (id_eveniment, id_istoric) values (?, ?)");
+                                $stmt->execute([$id_eveniment, $id_istoric]);
+
+                                $mesaj = '<a href="./">Vezi evenimentele create</a>';
+                            }
+                        }       
+                    } else { /// daca e autentificat si nu e organizator atunci e spectator
+                        $mesaj = '<a href="../">Spectatorii nu pot adauga evenimente</a>';
+                    } 
+                } else {
+                    $mesaj = '<a href="../login/">Nu sunteti autentificat insa va puteti face un cont in doar cateva secunde</a>';
+                }
+            }
+        } else {
+            $mesaj = 'Nu s-a bifat reCAPTCHA. <a href="./adauga.php">Mai incearca inca o data</a>';
+        }
+    }
+} 
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -43,63 +166,8 @@
 
     <main>
         <h1>Formularul a fost trimis</h1>
-        <?php
-        /// reCAPTCHA3: https://www.google.com/recaptcha/admin/site/741246782/setup
- 
-        if(isset($_POST['submit'])){ 
-            
-            // Form fields validation check
-            if(!empty($_POST['nume']) && !empty($_POST['locatie']) && !empty($_POST['data_eveniment'])){ 
-                
-                // reCAPTCHA checkbox validation
-                if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){ 
-                    // Google reCAPTCHA API secret key 
-                    $secret_key = '6Lc-hy4sAAAAAFfPwr6j2hMwo_aJVoSgKC2WDVDk'; 
-                    
-                    // reCAPTCHA response verification
-                    $verify_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret_key.'&response='.$_POST['g-recaptcha-response']); 
-                    
-                    // Decode reCAPTCHA response 
-                    $verify_response = json_decode($verify_captcha); 
-                    
-                    // Check if reCAPTCHA response returns success 
-                    if ($verify_response->success) { 
-                        require_once '../login/database.php';
-
-                        /// Doar organizatorul poate adauga evenimente
-                        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'organizator') {
-                            die("Acces interzis!");
-                        }
-
-                        /// Organizatorul poate adauga doar evenimente noi
-                        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                            // date_default_timezone_get('Europe/Bucharest'); /// Rezolva aparitia mesajului chiar daca e o data valida
-                            $data_din_formular = $_POST['data_eveniment'];
-                            $data_curenta = date('Y-m-d');
-                            if ($data_din_formular < $data_curenta) {
-                                die("Ne pare rau insa nu puteti adauga evenimente a caror data este mai veche decat astazi ($data_din_formular a fost inainte de $data_curenta) <a href='./adauga.php'>Adauga alt eveniment</a>");
-                            } else {
-                                $pdo = Database::getInstance()->getConnection();
-
-                                $stmt = $pdo->prepare("INSERT INTO eveniment (nume, locatie, data, idOrganizator) VALUES (?, ?, ?, ?)");
-
-                                $stmt->execute([
-                                    $_POST['nume'], 
-                                    $_POST['locatie'], 
-                                    $_POST['data_eveniment'], 
-                                    $_SESSION['idOrganizator']
-                                ]);
-
-                                header("Location: ./");
-                                exit;
-                            }
-                        }
-                    }
-                } else {
-                    die('Nu s-a bifat reCAPTCHA. <a href="./adauga.php">Mai incearca inca o data</a>');
-                }
-            }
-        } 
+        <?php 
+            echo "$mesaj";
         ?>
     </main>
 

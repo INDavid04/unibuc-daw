@@ -45,41 +45,57 @@
         <h1>Evenimentele mele</h1>
         <a href="./adauga.php">Adauga un eveniment</a>
         <?php 
-        require_once '../login/database.php';
+            require_once '../login/database.php';
+            $db = Database::GetInstance()->getConnection();
 
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'organizator') {
-            die('Nu aveti rolul de organizator. Prin urmare nu puteti organiza evenimente. <a href="../">Intoarce-te la prima pagina</a>');
-        }
+            /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
+            $eAutentificat = $_SESSION['id_utilizator'] ?? null;
 
-        $pdo =  Database::getInstance()->getConnection();
+            if ($eAutentificat) {
+                $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
+                $eOrganizator->execute([$_SESSION['id_utilizator']]);
+                if($eOrganizator->fetch()) {
+                    $pdo =  Database::getInstance()->getConnection();
 
-        /// Sterge evenimentul
-        if(isset($_GET['delete'])) {
-            $stmt = $pdo->prepare("DELETE FROM eveniment WHERE idEveniment = ? AND idOrganizator = ?");
-            $stmt->execute([$_GET['delete'], $_SESSION['idOrganizator']]);
-            header("Location: ./");
-            exit;
-        }
+                    /// Sterge evenimentul
+                    if(isset($_GET['delete'])) {
+                        $stmt = $pdo->prepare("DELETE FROM eveniment WHERE id_eveniment = ? AND id_utilizator = ?");
+                        $stmt->execute([$_GET['delete'], $_SESSION['id_utilizator']]);
+                        header("Location: ./");
+                        exit;
+                    }
 
-        /// Selecteaza toate evenimentele organizatorului autentificat
-        $stmt = $pdo->prepare("SELECT * FROM eveniment WHERE idOrganizator = ?");
-        $stmt->execute([$_SESSION['idOrganizator']]);
-        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    /// Selecteaza toate evenimentele organizatorului autentificat
+                    $stmt = $pdo->prepare("SELECT * FROM eveniment WHERE id_utilizator = ?");
+                    $stmt->execute([$_SESSION['id_utilizator']]);
+                    $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    ?>
+                        <ol>
+                            <?php foreach ($events as $event): ?>
+                                <li>
+                                    <ul>
+                                        <li><b>Denumire</b>: <?= htmlspecialchars($event['denumire']) ?></li>
+                                        <li><b>Organizator</b>: <?= $_SESSION['nume']?></li>
+                                        <li><b>Numar</b>: <?= $event['id_eveniment'] ?></li>
+                                    </ul>
+                                    <a href="./modifica.php?id=<?= $event['id_eveniment'] ?>">Modifica</a>
+                                    <span> | </span>
+                                    <a href="./index.php?delete=<?= $event['id_eveniment'] ?>" onclick="return confirm('Sigur doriti sa stergeti evenimentul?');">Sterge</a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ol>
+                    <?php
+                } else {
+                    ?>
+                        <a href="./bilet/">Spectatorii nu pot crea evenimente</a>
+                    <?php
+                }
+            } else {
+                ?>
+                    <a href="./login/">Nu sunteti autentificat</a>
+                <?php
+            }
         ?>
-        <ol>
-            <?php foreach ($events as $event): ?>
-            <li>
-                <p><?= htmlspecialchars($event['nume']) ?></p>
-                <ul>
-                    <li>Id eveniment: <?= htmlspecialchars($event['idEveniment']) ?></li>
-                    <li>Locatie: <?= htmlspecialchars($event['locatie']) ?></li>
-                    <li>Data: <?= htmlspecialchars($event['data']) ?></li>
-                </ul>
-                <a href="./modifica.php?id=<?= $event['idEveniment'] ?>">Modifica evenimentul</a>
-                <a href="./index.php?delete=<?= $event['idEveniment'] ?>" onclick="return confirm('Sigur doriti sa stergeti evenimentul?');">Sterge evenimentul</a>
-            </li>
-            <?php endforeach; ?>
-        </ol>
     </main>
 
     <footer>

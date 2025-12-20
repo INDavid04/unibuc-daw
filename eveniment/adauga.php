@@ -45,25 +45,54 @@
 
     <main>
         <h1>Adauga eveniment</h1>
+        <p>Completeaza formularul de mai jos</p>
         <?php 
-        session_start(); 
+            require_once '../login/database.php';
+            $db = Database::GetInstance()->getConnection();
 
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'organizator') {
-            die('Acces interzis! Numai organizatorii pot adauga evenimente.<a href="../">Intoarce-te la prima pagina</a>');
-        }
+            /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
+            $eAutentificat = $_SESSION['id_utilizator'] ?? null;
+
+            if ($eAutentificat) {
+                $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
+                $eOrganizator->execute([$_SESSION['id_utilizator']]);
+                if ($eOrganizator->fetch()) {
+                    ?>
+                        <form action="./insert.php" method="POST">
+                            <label for="denumire">Denumire:</label>
+                            <input type="text" name="denumire" required>
+
+                            <label for="denumire_locatie">Locatie:</label>
+                            <input type="text" name="denumire_locatie" required>
+
+                            <label for="denumire_judet">Judet (optional):</label>
+                            <input type="text" name="denumire_judet">
+
+                            <label for="denumire_tara">Tara (optional):</label>
+                            <input type="text" name="denumire_tara">
+
+                            <label for="incepe">Incepe:</label>
+                            <input type="datetime-local" name="incepe" min="<?php echo date('Y-m-d\TH:i');?>" required>
+
+                            <label for="termina">Termina:</label>
+                            <input type="datetime-local" name="termina" min="<?php echo date('Y-m-d\TH:i');?>" required>
+
+                            <!-- reCAPTCHA -->
+                            <div class="g-recaptcha" data-sitekey="6Lc-hy4sAAAAAERi3w6XAkSCFstfdGyN7t2O0h4e"></div>
+                            <button type="submit" name="submit">Adauga eveniment</button>
+                        </form>
+                    <?php
+                } else { /// daca e autentificat si nu e organizator atunci e spectator
+                    ?>
+                        <a href="../">Spectatorii nu pot adauga evenimente</a>
+                    <?php
+                } 
+            } else {
+                ?>
+                    <a href="../login/">Nu sunteti autentificat insa va puteti face un cont in doar cateva secunde</a>
+                <?php
+            }
         ?>
-
-        <form action="./insert.php" method="POST">
-            <label for="nume">Nume eveniment:</label>
-            <input type="text" name="nume" required>
-            <label for="locatie">Locatie eveniment:</label>
-            <input type="text" name="locatie" required>
-            <label for="data_eveniment">Data eveniment:</label>
-            <input type="date" name="data_eveniment" id="data_eveniment" min="<?php echo date('Y-m-d');?>" required>
-            <!-- reCAPTCHA -->
-            <div class="g-recaptcha" data-sitekey="6Lc-hy4sAAAAAERi3w6XAkSCFstfdGyN7t2O0h4e"></div>
-            <button type="submit" name="submit">Adauga eveniment</button>
-        </form>
     </main>
 
     <footer>

@@ -2,7 +2,7 @@ body { display: block; margin: 0; padding: 0; background-color: #333; color: #fa
 
 ul { list-style-type: none; padding: 0; }
 
-a { display: block; padding: 0.5rem 0; color: #faebd7 }
+a { display: inline-block; padding: 0.5rem 0; color: #faebd7 }
 
 a:hover, a:focus { text-decoration: none; color: #00bfff; text-shadow: 0 0 3rem #333; transition: 0.2s; }
 
@@ -30,6 +30,6 @@ main { margin: 1rem 0; max-width: 70ch; min-height: 100vh; padding: 0.5rem;
 }
     h1 { margin: 0; padding: 0; }
     iframe { width: 100%; }
-    form { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
+    form { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem; border: 1px solid #faebd7; border-radius: 2rem; padding: 2rem 1rem 1rem; }
 
 footer { padding: 0.5rem; background-color: #faebd7; color: #333; text-align: center; }

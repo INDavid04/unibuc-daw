@@ -138,3 +138,12 @@ create table bilet (
         references eveniment(id_eveniment)
         on delete cascade
 ) engine=innodb;
+
+--
+-- Modifica tabelele
+--
+
+-- Adauga si ora la data
+alter table istoric
+modify column incepe datetime,
+modify column termina datetime;
