@@ -51,6 +51,11 @@
         <a href="./descrierea-aplicatiei/">Vezi descrierea aplicatiei web</a>
         
         <h2>Tema 2: CRUD. Create. Read. Update. Delete. Login <br> (22 Noiembrie 2025, 02:22)</h2>
+        <?php
+            $db = Database::GetInstance()->getConnection();
+            $eOrganizator = $db->prepare("select id_organizator form organizator where username")
+        ?>
+        
         <?php if (!isset($_SESSION['username'])): ?>
             <a href="./login/">Creeaza cont / Autentifica-te pentru a afisa evenimentele organizate de tine</a>
         <?php else: ?>
