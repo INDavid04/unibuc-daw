@@ -32,10 +32,10 @@
         <nav>
             <ul>
                 <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
-                <?php if (!isset($_SESSION['username'])): ?>
+                <?php if (!isset($_SESSION['nume'])): ?>
                     <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['nume']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -46,11 +46,11 @@
 
         <h2>Intra in contul deja creat</h2>
         <form action="./process-login.php" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" name="username" id="username" required>
+            <label for="nume">Username:</label>
+            <input type="text" name="nume" id="nume" required>
             
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required>
+            <label for="parola">Password:</label>
+            <input type="parola" name="parola" id="parola" required>
 
             <button type="submit">Autentifica-te</button>
         </form>

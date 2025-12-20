@@ -32,10 +32,10 @@
         <nav>
             <ul>
                 <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
-                <?php if (!isset($_SESSION['username'])): ?>
+                <?php if (!isset($_SESSION['nume'])): ?>
                     <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['nume']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -45,12 +45,20 @@
         <h1>Ati trimis formularul</h1>
     
         <?php
+            require_once('./database.php');
+
+            $pdo = Database::getInstance()->getConnection();
+            $nume = $_POST['nume'];
+            $mail = $_POST['mail'];
+            $parola = password_hash($_POST['parola'], PASSWORD_DEFAULT);
+            $contact = $_POST['contact'];
+        
             /// reCAPTCHA5: https://www.google.com/recaptcha/admin/site/741250365/setup
 
             if(isset($_POST['submit'])){ 
                 
                 // Form fields validation check
-                if(!empty($_POST['username']) && !empty($_POST['email']) && !empty($_POST['password'])){ 
+                if(!empty($_POST['nume']) && !empty($_POST['mail']) && !empty($_POST['parola']) && !empty($_POST['contact'])){ 
 
                     // reCAPTCHA checkbox validation
                     if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){ 
@@ -65,24 +73,35 @@
                         
                         // Check if reCAPTCHA response returns success 
                         if($verify_response->success){ 
-                            
-                            $pdo = new PDO("mysql:host=localhost;dbname=dirimias_organizare_evenimente", "dirimias_organizare_evenimente", "4ZuW47xKxJDbM6tnxjaq");
+                            try {
+                                /// Modificarile sunt salvate la final daca totul merge bine
+                                $pdo->beginTransaction();
 
-                            $username = $_POST['username'];
-                            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                            
-                            /// Verifica da utilizatorul exista deja
-                            $stmt = $pdo->prepare("select * from spectator where username = ?");
-                            $stmt->execute([$username]);
-                            if ($stmt->rowCount() > 0) {
-                                die("Acest username este deja folosit");
+                                /// Verifica daca utilizatorul exista deja
+                                $stmt = $pdo->prepare("select * from utilizator where nume = ?");
+                                $stmt->execute([$nume]);
+                                if ($stmt->rowCount() > 0) {
+                                    die("Acest nume de utilizator este deja folosit");
+                                }
+
+                                /// Insereaza in tabelul utilizator
+                                $stmt = $pdo->prepare("insert into utilizator (nume, mail, parola) values (?, ?, ?)");
+                                $stmt->execute([$nume, $mail, $parola]);
+
+                                /// Preia id-ul generat automat pentru acest utilizator
+                                $id_utilizator = $pdo->lastInsertId();
+
+                                /// Insereaza in tabelul organizator
+                                $stmt = $pdo->prepare("insert into organizator (id_utilizator, contact) values (?, ?)");
+                                $stmt->execute([$id_utilizator, $contact]);
+
+                                $pdo->commit();
+
+                                echo 'Contul de organizator a fost creat cu succes. <a href="./">De acum va puteti autentifica cu numele si parola setate</a>';
+                            } catch (Exception $e) {
+                                $pdo->rollBack();
+                                echo "Eroare: " . $e->getMessage();
                             }
-
-                            $stmt = $pdo->prepare("insert into organizator (username, password) values (?, ?)");
-                            $stmt->execute([$username, $password]);
-
-                            echo 'Contul de organizator a fost creat cu succes. <a href="./">De acum va puteti autentifica cu username si password setate</a>';
-                            
                         } 
                     } else { 
                         echo 'Nu s-a putut adauga contul de organizator intrucat nu s-a bifat reCAPTCHA. <a href="./register-organizer.php">Mai incercati inca o data</a>';

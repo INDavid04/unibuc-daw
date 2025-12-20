@@ -1,7 +1,4 @@
 <?php 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 session_start(); 
 require_once './database.php';
 
@@ -11,18 +8,26 @@ $nume = $_POST['nume'] ?? '';
 $parola = $_POST['parola'] ?? '';
 $eroare = '';
 
-/// Cauta in tabelul utilizator
-$sql = "select * from utilizator where nume = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$nume]);
-$utilizator = $stmt->fetch(PDO::FETCH_ASSOC);
-if ($utilizator && isset($utilizator['parola']) && password_verify($parola, $utilizator['parola'])) {
-    $_SESSION['id_utilizator'] = $utilizator['id_utilizator'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!empty($nume) && !empty($parola)) {
+        /// Cauta in tabelul utilizator
+        $sql = "select * from utilizator where nume = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$nume]);
+        $utilizator = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    header("Location: ../");
-    exit;
-} else {
-    $eroare = 'Email sau parola grestita. <a href="./">Incearca alt nume de utilizator sau alta parola</a>';
+        if ($utilizator && isset($utilizator['parola']) && password_verify($parola, $utilizator['parola'])) {
+            $_SESSION['id_utilizator'] = $utilizator['id_utilizator'];
+            $_SESSION['nume'] = $utilizator['nume']; /// pentru a afisa in navbar despre cutare
+
+            header("Location: ../");
+            exit;
+        } else {
+            $eroare = 'Email sau parola grestita. <a href="./">Incearca alt nume de utilizator sau alta parola</a>';
+        }
+    } else {
+        $eroare = 'Email sau parola grestita. <a href="./">Incearca alt nume de utilizator sau alta parola</a>';
+    }
 }
 ?>
 

@@ -34,10 +34,10 @@
         <nav>
             <ul>
                 <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
-                <?php if (!isset($_SESSION['username'])): ?>
+                <?php if (!isset($_SESSION['nume'])): ?>
                     <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['nume']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -47,14 +47,18 @@
         <h1>Inregistreaza cont spectator</h1>
         <p>Completeaza formularul de mai jos</p>
         <form action="./process-register-spectator.php" method="POST">
-            <label for="username">Nume utilizator:</label>
-            <input type="text" id="username" name="username" required>
+            <label for="nume">Nume utilizator:</label>
+            <input type="text" id="nume" name="nume" maxlength="80" placeholder="John Doe" required>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <label for="mail">Email:</label>
+            <input type="mail" id="mail" name="mail" maxlength="80" placeholder="john-doe@example.com" required>
 
-            <label for="password">Parola:</label>
-            <input type="password" id="password" name="password" required>
+            <label for="parola">Parola:</label>
+            <input type="password" id="parola" name="parola" placeholder="*******" required>
+
+            <label for="telefon">Telefon</label>
+            <input type="tel" name="telefon" id="telefon" maxlength="20" placeholder="+40712345678" required>
+
             <!-- reCAPTCHA -->
             <div class="g-recaptcha" data-sitekey="6LcVji4sAAAAAO4E5UzGBn4w6Ris9AYjMAcEom9y"></div>
             <button type="submit" name="submit">Inregistreaza-te</button>

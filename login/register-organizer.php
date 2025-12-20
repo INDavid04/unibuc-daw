@@ -34,10 +34,10 @@
         <nav>
             <ul>
                 <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
-                <?php if (!isset($_SESSION['username'])): ?>
+                <?php if (!isset($_SESSION['nume'])): ?>
                     <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['nume']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -47,15 +47,18 @@
         <h1>Inregistreaza cont organizator</h1>
         <p>Completeaza formularul de mai jos</p>
         <form action="./process-register-organizer.php" method="POST">
-            <label for="username">Nume utilizator:</label>
-            <input type="text" id="username" name="username" required>
+            <label for="nume">Nume utilizator:</label>
+            <input type="text" id="nume" name="nume" maxlength="80" placeholder="John Doe" required>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <label for="mail">Email:</label>
+            <input type="email" id="mail" name="mail" maxlength="80" placeholder="johne-doe@example.com" required>
 
-            <label for="password">Parola:</label>
-            <input type="password" id="password" name="password" required>
+            <label for="parola">Parola:</label>
+            <input type="password" id="parola" name="parola" placeholder="*******" required>
 
+            <label for="contact">Contact:</label>
+            <input type="url" name="contact" id="contact" maxlength="80" placeholder="https://john-doe.com / https://linkedin.com/in/john-doe" required>
+            
             <!-- reCAPTCHA -->
             <div class="g-recaptcha" data-sitekey="6Lc9lS4sAAAAAPH03vOQhuZztAAze9tbQNswlPDR"></div>
 

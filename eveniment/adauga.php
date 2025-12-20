@@ -34,10 +34,10 @@
         <nav>
             <ul>
                 <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
-                <?php if (!isset($_SESSION['username'])): ?>
+                <?php if (!isset($_SESSION['nume'])): ?>
                     <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['nume']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+$id_utilizator = $_SESSION['id_utilizator'] ?? null;
 
 require_once './database.php';
 
@@ -16,41 +17,38 @@ if($_SESSION['role'] === 'spectator') {
 }
 
 /// Datele utilizatorului logat
-$stmt = $pdo->prepare("select * from $table where $idField = ?");
-$stmt->execute([$id]);
+$stmt = $pdo->prepare("select * from utilizator where id_utilizator = ?");
+$stmt->execute([$id_utilizator]);
 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-/// Actualizeaza username
-if (isset($_POST['updateUsername'])) {
-    $newUsername = $_POST['username'];
-    $sql = "update $table set username=? where $idField=?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$newUsername, $id]);
+/// Actualizeaza nume
+if (isset($_POST['actualizeazaNume'])) {
+    $nume_nou = $_POST['nume'];
+    $stmt = $pdo->prepare("update utilizator set nume=? where id_utilizator=?");
+    $stmt->execute([$nume_nou, $id_utilizator]);
     
-    $_SESSION['username'] = $newUsername;
+    $_SESSION['nume'] = $nume_nou;
     
     header("Location: ../");
     exit;
 }
 
-/// Actualizeaza password
-if (isset($_POST['updatePassword'])) {
-    $newPassword = $_POST['password'];
+/// Actualizeaza parola
+if (isset($_POST['actualizeazaParola'])) {
+    $parola_noua = $_POST['parola'];
 
-    $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
-    $sql = "update $table set password=? where $idField=?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$hashed, $id]);
+    $hashed = password_hash($parola_noua, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("update utilizator set parola=? where id_utilizator=?");
+    $stmt->execute([$hashed, $id_utilizator]);
     session_destroy();
     header("Location: ./");
     exit;
 }
 
 /// Sterge contul
-if (isset($_POST['delete'])) {
-    $sql = "DELETE FROM $table WHERE $idField=?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$id]);
+if (isset($_POST['sterge'])) {
+    $stmt = $pdo->prepare("DELETE FROM utilizator WHERE id_utilizator=?");
+    $stmt->execute([$id_utilizator]);
     session_destroy();
     header("Location: ../");
     exit;
@@ -89,33 +87,33 @@ if (isset($_POST['delete'])) {
         <nav>
             <ul>
                 <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
-                <?php if (!isset($_SESSION['username'])): ?>
+                <?php if (!isset($_SESSION['nume'])): ?>
                     <li><a href="../login/">Creeaza cont / Autentifica-te</a></li>
                 <?php else: ?>
-                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['username']); ?></a></li>
+                    <li><a href="../login/user-info.php">Despre <?= htmlspecialchars($_SESSION['nume']); ?></a></li>
                 <?php endif; ?>
             </ul>
         </nav>
     </header>
 
     <main>
-        <h1>Detalii utilizator</h1>
+        <h1>Despre <?php echo "$nume" ?></h1>
 
-        <h2>Actualizeaza username/password</h2>
+        <h2>Actualizeaza informatiile</h2>
         <form method="POST">
-            <label>Username nou:</label>
-            <input type="text" name="username">
-            <button type="submit" name="updateUsername">Actualizeaza username</button>
+            <label>Nume nou:</label>
+            <input type="text" name="nume">
+            <button type="submit" name="actualizeazaNume">Actualizeaza nume</button>
         </form>
-        <form method="post">
+        <form method="POST">
             <label>Parola noua:</label>
-            <input type="password" name="password">
-            <button type="submit" name="updatePassword">Actualizeaza password</button>
+            <input type="password" name="parola">
+            <button type="submit" name="actualizeazaParola">Actualizeaza parola</button>
         </form>
 
         <h2>Sterge contul</h2>
         <form method="POST" onsubmit="return confirm('Sigur vrei sa stergi contul?')">
-            <button type="submit" name="delete">Sterge cont</button>
+            <button type="submit" name="sterge">Sterge cont</button>
         </form>
 
 
