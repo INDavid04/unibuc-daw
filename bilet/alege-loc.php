@@ -1,11 +1,46 @@
-<?php session_start(); ?>
+<?php session_start(); 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+require_once '../login/database.php';
+$db = Database::getInstance()->getConnection();
+
+$id_eveniment = $_GET['id_eveniment'] ?? null;
+$eroare = null;
+$eveniment = null;
+$locuri_cumparate = [];
+
+if ($id_eveniment) {
+    $stmt = $db->prepare("
+        select *
+        from eveniment
+        where id_eveniment = ?
+    ");
+    $stmt->execute([$id_eveniment]);
+    $eveniment = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($eveniment) {
+        $stmt = $db->prepare("
+            select loc
+            from bilet
+            where id_eveniment=?
+        ");
+        $stmt->execute([$id_eveniment]);
+        $locuri_cumparate = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    } else {
+        $eroare = "Evenimentul #$id_eveniment nu exista";
+    }
+} else {
+    $eroare = "Evenimentul are id-ul null";
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IND | DAW Evenimentele mele</title>
+    <title>IND | DAW Alege locul</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
@@ -42,57 +77,30 @@
     </header>
 
     <main>
-        <h1>Evenimentele mele</h1>
-        <a href="./adauga.php">Adauga un eveniment</a>
-        <?php 
-            require_once '../login/database.php';
-            $db = Database::GetInstance()->getConnection();
-
-            /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
-            $eAutentificat = $_SESSION['id_utilizator'] ?? null;
-
-            if ($eAutentificat) {
-                $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
-                $eOrganizator->execute([$_SESSION['id_utilizator']]);
-                if($eOrganizator->fetch()) {
-                    $pdo =  Database::getInstance()->getConnection();
-
-                    /// Sterge evenimentul
-                    if(isset($_GET['delete'])) {
-                        $stmt = $pdo->prepare("DELETE FROM eveniment WHERE id_eveniment = ? AND id_utilizator = ?");
-                        $stmt->execute([$_GET['delete'], $_SESSION['id_utilizator']]);
-                        header("Location: ./");
-                        exit;
-                    }
-
-                    /// Selecteaza toate evenimentele organizatorului autentificat
-                    $stmt = $pdo->prepare("SELECT * FROM eveniment WHERE id_utilizator = ?");
-                    $stmt->execute([$_SESSION['id_utilizator']]);
-                    $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    ?>
-                        <ol>
-                            <?php foreach ($events as $event): ?>
-                                <li>
-                                    <ul>
-                                        <li><b>Denumire</b>: <?= htmlspecialchars($event['denumire']) ?></li>
-                                        <li><b>Organizator</b>: <?= $_SESSION['nume']?></li>
-                                        <li><b>Pret</b>: <?= $event['pret'] ?></li>
-                                    </ul>
-                                    <a href="./modifica.php?id=<?= $event['id_eveniment'] ?>">Modifica</a>
-                                    <span> | </span>
-                                    <a href="./index.php?delete=<?= $event['id_eveniment'] ?>" onclick="return confirm('Sigur doriti sa stergeti evenimentul?');">Sterge</a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ol>
-                    <?php
-                } else {
-                    ?>
-                        <a href="./bilet/">Spectatorii nu pot crea evenimente</a>
-                    <?php
-                }
+        <h1>Alege locul</h1>
+        <?php
+            if ($eroare) {
+                echo "Eroare: $eroare";
             } else {
                 ?>
-                    <a href="./login/">Nu sunteti autentificat</a>
+                    <p>Pret bilet: <strong><?= number_format($eveniment['pret'], 2) ?> RON</strong></p>
+
+                    <div class="containerGridLocuri">
+                        <div class="gridLocuri">
+                            <?php
+                                for ($i = 1; $i <= 100; $i++) {
+                                    $esteCumparat = in_array($i, $locuri_cumparate);
+                                    if (!$esteCumparat) {
+                                        ?>
+                                            <a href="genereaza-bilet.php?id_eveniment=<?= $id_eveniment ?>&loc=<?= $i ?>&pret=<?=$eveniment['pret'] ?>" class="loc" target="_blank" rel="noopener noreferrer">
+                                                <?= $i ?>
+                                            </a>
+                                        <?php
+                                    }
+                                }
+                            ?>
+                        </div>
+                    </div>
                 <?php
             }
         ?>

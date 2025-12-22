@@ -84,21 +84,26 @@ error_reporting(E_ALL);?>
             $pdo = Database::getInstance()->getConnection();
 
             $stmt = $pdo->prepare("
-                select e.*, u.nume as nume
+                select e.*, u.nume
                 from eveniment e
                 join utilizator u on e.id_utilizator = u.id_utilizator
             ");
             $stmt->execute();
-            $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $evenimente = $stmt->fetchAll(PDO::FETCH_ASSOC);
         ?>
 
         <ol>
-            <?php foreach ($events as $event): ?>
+            <?php foreach ($evenimente as $eveniment): ?>
             <li>
                 <ul>
-                    <li><b>Denumire</b>: <?= htmlspecialchars($event['denumire']) ?></li>
-                    <li><b>Organizator</b>: <?= $event['nume']?></li>
-                    <li><b>Numar</b>: <?= $event['id_eveniment'] ?></li>
+                    <li><b>Denumire</b>: <?= htmlspecialchars($eveniment['denumire']) ?></li>
+                    <li><b>Organizator</b>: <?= $eveniment['nume']?></li>
+                    <li><b>Pret</b>: <?= $eveniment['pret']?></li>
+                    <li>
+                        <a href="./bilet/alege-loc.php?id_eveniment=<?= $eveniment['id_eveniment'] ?>">Cumpara bilet</a>
+                        <span> | </span>
+                        <a href="./traseu/">Vezi traseul</a>
+                    </li>
                 </ul>
             </li>
             <?php endforeach; ?>

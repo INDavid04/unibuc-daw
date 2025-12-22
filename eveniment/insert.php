@@ -48,9 +48,9 @@ if(isset($_POST['submit'])){
                             } else if ($termina < $incepe) {
                                 $mesaj = "Ne pare rau insa nu puteti termina un eveniment mai devreme decat inceperea acestuia ($termina a fost inainte de $incepe) <a href='./adauga.php'>Adauga alt eveniment</a>";
                             } else {
-                                /// Insereaza denumire, id_utilizator in eveniment
-                                $stmt = $db->prepare("insert into eveniment (denumire, id_utilizator) values (?, ?)");
-                                $stmt->execute([$_POST['denumire'], $_SESSION['id_utilizator']]);
+                                /// Insereaza denumire, id_utilizator, pret in eveniment
+                                $stmt = $db->prepare("insert into eveniment (denumire, id_utilizator, pret) values (?, ?, ?)");
+                                $stmt->execute([$_POST['denumire'], $_SESSION['id_utilizator'], $_POST['pret']]);
 
                                 /// Preia id-ul generat automat pentru eveniment
                                 $id_eveniment = $db->lastInsertId();

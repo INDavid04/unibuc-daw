@@ -77,6 +77,9 @@
                             <label for="termina">Termina:</label>
                             <input type="datetime-local" name="termina" min="<?php echo date('Y-m-d\TH:i');?>" required>
 
+                            <label for="pret">Pret:</label>
+                            <input type="number" name="pret" value="0" step="0.01">
+
                             <!-- reCAPTCHA -->
                             <div class="g-recaptcha" data-sitekey="6Lc-hy4sAAAAAERi3w6XAkSCFstfdGyN7t2O0h4e"></div>
                             <button type="submit" name="submit">Adauga eveniment</button>

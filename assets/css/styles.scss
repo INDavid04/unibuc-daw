@@ -1,5 +1,6 @@
 body { display: block; margin: 0; padding: 0; background-color: #333; color: #faebd7; font-family: Arial, Helvetica, sans-serif; font-size: 16px; }
 
+ol { display: flex; flex-direction: column; gap: 1.2rem; }
 ul { list-style-type: none; padding: 0; }
 
 a { display: inline-block; padding: 0.5rem 0; color: #faebd7 }
@@ -31,5 +32,9 @@ main { margin: 1rem 0; max-width: 70ch; min-height: 100vh; padding: 0.5rem;
     h1 { margin: 0; padding: 0; }
     iframe { width: 100%; }
     form { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem; border: 1px solid #faebd7; border-radius: 2rem; padding: 2rem 1rem 1rem; }
+    .containerGridLocuri { display: flex; justify-content: center; align-items: center; background-color: #faebd7; border-radius: 1rem; }
+        .gridLocuri { display: grid; grid-template-columns: repeat(auto-fill, 4rem); gap: 1rem; padding: 1rem; width: 100%; }
+            .loc { display: flex; justify-content: center; align-items: center; text-decoration: none; border-radius: 0.5rem; width: 4rem; height: 4rem; background-color: #faebd7; color: #333; transition: 0.2s; }
+            .loc:hover, .loc:focus { background-color: #00bfff; color: #333; }
 
 footer { padding: 0.5rem; background-color: #faebd7; color: #333; text-align: center; }

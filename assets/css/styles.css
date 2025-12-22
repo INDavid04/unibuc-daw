@@ -8,6 +8,12 @@ body {
   font-size: 16px;
 }
 
+ol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
 ul {
   list-style-type: none;
   padding: 0;
@@ -144,6 +150,40 @@ form {
   border: 1px solid #faebd7;
   border-radius: 2rem;
   padding: 2rem 1rem 1rem;
+}
+
+.containerGridLocuri {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #faebd7;
+  border-radius: 1rem;
+}
+
+.gridLocuri {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 4rem);
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.loc {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  width: 4rem;
+  height: 4rem;
+  background-color: #faebd7;
+  color: #333;
+  transition: 0.2s;
+}
+
+.loc:hover, .loc:focus {
+  background-color: #00bfff;
+  color: #333;
 }
 
 footer {

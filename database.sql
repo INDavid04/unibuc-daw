@@ -147,3 +147,12 @@ create table bilet (
 alter table istoric
 modify column incepe datetime,
 modify column termina datetime;
+
+-- Adauga coloana loc in tabelul bilet
+alter table bilet
+add column loc int not null;
+
+-- Adauga coloana pret si in tabelul eveniment
+-- Explicatie: Organizatorul stabileste pretul pentru toti spectatorii pentru evenimnetul x. Peste ceva timp, se poate sa modifice pretul insa cineva sa fi cumparat biletul cu pretul vechi, de aceea este bine sa avem un pret in eveniment (pretul actual) si un pret in bilet (pretul cu care a fost cumparat biletul)
+alter table eveniment
+add column pret float not null;
