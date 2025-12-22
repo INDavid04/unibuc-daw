@@ -83,7 +83,11 @@ error_reporting(E_ALL);?>
         <?php
             $pdo = Database::getInstance()->getConnection();
 
-            $stmt = $pdo->prepare("SELECT * FROM eveniment");
+            $stmt = $pdo->prepare("
+                select e.*, u.nume as nume
+                from eveniment e
+                join utilizator u on e.id_utilizator = u.id_utilizator
+            ");
             $stmt->execute();
             $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
         ?>
@@ -93,7 +97,7 @@ error_reporting(E_ALL);?>
             <li>
                 <ul>
                     <li><b>Denumire</b>: <?= htmlspecialchars($event['denumire']) ?></li>
-                    <li><b>Organizator</b>: <?= $_SESSION['nume']?></li>
+                    <li><b>Organizator</b>: <?= $event['nume']?></li>
                     <li><b>Numar</b>: <?= $event['id_eveniment'] ?></li>
                 </ul>
             </li>
