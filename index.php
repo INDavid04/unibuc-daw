@@ -85,6 +85,9 @@ if (!isset($_SESSION['csrf_token'])) {
                 <?php
             }
         ?>
+
+        <h2>Tema 3: Autentificare si securizare acces <br> (22 Decembrie 2025, 23:33)</h2>
+        <a href="./login">Intra in cont</a>
         
         <h2>Evenimente</h2>
         <?php
