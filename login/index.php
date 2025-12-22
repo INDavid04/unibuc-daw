@@ -46,6 +46,8 @@
 
         <h2>Intra in contul deja creat</h2>
         <form action="./process-login.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+
             <label for="nume">Username:</label>
             <input type="text" name="nume" id="nume" required>
             

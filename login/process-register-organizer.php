@@ -56,10 +56,10 @@
             /// reCAPTCHA5: https://www.google.com/recaptcha/admin/site/741250365/setup
 
             if(isset($_POST['submit'])){ 
-                
-                // Form fields validation check
-                if(!empty($_POST['nume']) && !empty($_POST['mail']) && !empty($_POST['parola']) && !empty($_POST['contact'])){ 
-
+                /// Securitate
+                if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                    $eroare = "CSRF token inexistent sau invalid";
+                } else if(!empty($_POST['nume']) && !empty($_POST['mail']) && !empty($_POST['parola']) && !empty($_POST['contact'])){ 
                     // reCAPTCHA checkbox validation
                     if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){ 
                         // Google reCAPTCHA API secret key 

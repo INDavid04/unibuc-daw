@@ -59,6 +59,8 @@
                 if ($eOrganizator->fetch()) {
                     ?>
                         <form action="./insert.php" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+
                             <label for="denumire">Denumire:</label>
                             <input type="text" name="denumire" required>
 

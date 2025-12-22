@@ -1,57 +1,60 @@
 <?php
+// Securizarea cookie-urilor de sesiune (HTTPOnly și Secure)
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1); 
+ini_set('session.use_only_cookies', 1);
+
 session_start();
-$id_utilizator = $_SESSION['id_utilizator'] ?? null;
 
 require_once './database.php';
-
 $pdo = Database::getInstance()->getConnection();
 
-if($_SESSION['role'] === 'spectator') {
-    $table = 'spectator';
-    $idField = 'idSpectator';
-    $id = $_SESSION['idSpectator'];
-} else {
-    $table = 'organizator';
-    $idField = 'idOrganizator';
-    $id = $_SESSION['idOrganizator'];
-}
-
-/// Datele utilizatorului logat
-$stmt = $pdo->prepare("select * from utilizator where id_utilizator = ?");
-$stmt->execute([$id_utilizator]);
-$userData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-/// Actualizeaza nume
-if (isset($_POST['actualizeazaNume'])) {
-    $nume_nou = $_POST['nume'];
-    $stmt = $pdo->prepare("update utilizator set nume=? where id_utilizator=?");
-    $stmt->execute([$nume_nou, $id_utilizator]);
-    
-    $_SESSION['nume'] = $nume_nou;
-    
+$id_utilizator = $_SESSION['id_utilizator'] ?? null;
+if (!$id_utilizator) {
     header("Location: ../");
     exit;
 }
 
-/// Actualizeaza parola
-if (isset($_POST['actualizeazaParola'])) {
-    $parola_noua = $_POST['parola'];
+/// Securitate
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Csrf toke invalid sau inexistent");
+    }
 
-    $hashed = password_hash($parola_noua, PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare("update utilizator set parola=? where id_utilizator=?");
-    $stmt->execute([$hashed, $id_utilizator]);
-    session_destroy();
-    header("Location: ./");
-    exit;
-}
+    /// Regenerare ID pentru a preveni Session Fixation
+    session_regenerate_id(true);
 
-/// Sterge contul
-if (isset($_POST['sterge'])) {
-    $stmt = $pdo->prepare("DELETE FROM utilizator WHERE id_utilizator=?");
-    $stmt->execute([$id_utilizator]);
-    session_destroy();
-    header("Location: ../");
-    exit;
+    /// Actualizeaza nume
+    if (isset($_POST['actualizeazaNume'])) {
+        $nume_nou = $_POST['nume'];
+        $stmt = $pdo->prepare("update utilizator set nume=? where id_utilizator=?");
+        $stmt->execute([$nume_nou, $id_utilizator]);
+        
+        $_SESSION['nume'] = $nume_nou;
+        
+        header("Location: ../");
+        exit;
+    }
+
+    /// Actualizeaza parola
+    if (isset($_POST['actualizeazaParola'])) {
+        $parola_noua = $_POST['parola'];
+
+        $hashed = password_hash($parola_noua, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("update utilizator set parola=? where id_utilizator=?");
+        $stmt->execute([$hashed, $id_utilizator]);
+        header("Location: ./logout.php");
+        exit;
+    }
+
+    /// Sterge contul
+    if (isset($_POST['sterge'])) {
+        $stmt = $pdo->prepare("DELETE FROM utilizator WHERE id_utilizator=?");
+        $stmt->execute([$id_utilizator]);
+        session_destroy();
+        header("Location: ../");
+        exit;
+    }
 }
 ?>
 
@@ -97,22 +100,30 @@ if (isset($_POST['sterge'])) {
     </header>
 
     <main>
-        <h1>Despre <?php echo "$nume" ?></h1>
+        <h1>Despre <?= htmlspecialchars($_SESSION['nume']) ?></h1>
 
         <h2>Actualizeaza informatiile</h2>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+
             <label>Nume nou:</label>
             <input type="text" name="nume">
+
             <button type="submit" name="actualizeazaNume">Actualizeaza nume</button>
         </form>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+
             <label>Parola noua:</label>
             <input type="password" name="parola">
+            
             <button type="submit" name="actualizeazaParola">Actualizeaza parola</button>
         </form>
 
         <h2>Sterge contul</h2>
         <form method="POST" onsubmit="return confirm('Sigur vrei sa stergi contul?')">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+            
             <button type="submit" name="sterge">Sterge cont</button>
         </form>
 

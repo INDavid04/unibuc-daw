@@ -9,7 +9,10 @@ $parola = $_POST['parola'] ?? '';
 $eroare = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!empty($nume) && !empty($parola)) {
+    /// Securitate
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $eroare = "CSRF token inexistent sau invalid";
+    } else if (!empty($nume) && !empty($parola)) {
         /// Cauta in tabelul utilizator
         $sql = "select * from utilizator where nume = ?";
         $stmt = $pdo->prepare($sql);
@@ -19,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($utilizator && isset($utilizator['parola']) && password_verify($parola, $utilizator['parola'])) {
             $_SESSION['id_utilizator'] = $utilizator['id_utilizator'];
             $_SESSION['nume'] = $utilizator['nume']; /// pentru a afisa in navbar despre cutare
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); /// alt token fata de cel de pe homepage   
 
             header("Location: ../");
             exit;

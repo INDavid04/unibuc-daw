@@ -1,6 +1,4 @@
 <?php session_start(); 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 
 require_once '../login/database.php';
 $db = Database::getInstance()->getConnection();
@@ -10,7 +8,13 @@ $eroare = null;
 $eveniment = null;
 $locuri_cumparate = [];
 
-if ($id_eveniment) {
+/// Verifica daca e spectator
+$stmt = $db->prepare("select * from spectator where id_utilizator = ?");
+$stmt->execute([$_SESSION['id_utilizator']]);
+$eSpectator = $stmt->fetch();
+if (!$eSpectator) {
+    $eroare = "Nu aveti cont de spectator. <a href='../'>Apasa aici pentru a te intoarce acasa.</a>";
+} else if ($id_eveniment) {
     $stmt = $db->prepare("
         select *
         from eveniment

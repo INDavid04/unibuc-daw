@@ -76,7 +76,7 @@
                                     <ul>
                                         <li><b>Denumire</b>: <?= htmlspecialchars($event['denumire']) ?></li>
                                         <li><b>Organizator</b>: <?= $_SESSION['nume']?></li>
-                                        <li><b>Pret</b>: <?= $event['pret'] ?></li>
+                                        <li><b>Pret</b>: <?= htmlspecialchars($event['pret']) ?></li>
                                     </ul>
                                     <a href="./modifica.php?id=<?= $event['id_eveniment'] ?>">Modifica</a>
                                     <span> | </span>

@@ -1,6 +1,13 @@
-<?php session_start(); 
+<?php 
+session_start(); 
 ini_set('display_errors', 1);
-error_reporting(E_ALL);?>
+error_reporting(E_ALL);
+
+// Genereaza csrf token dacă nu există deja
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -84,7 +91,7 @@ error_reporting(E_ALL);?>
             $pdo = Database::getInstance()->getConnection();
 
             $stmt = $pdo->prepare("
-                select e.*, u.nume
+                select e.*, u.nume as nume_organizator
                 from eveniment e
                 join utilizator u on e.id_utilizator = u.id_utilizator
             ");
@@ -97,8 +104,8 @@ error_reporting(E_ALL);?>
             <li>
                 <ul>
                     <li><b>Denumire</b>: <?= htmlspecialchars($eveniment['denumire']) ?></li>
-                    <li><b>Organizator</b>: <?= $eveniment['nume']?></li>
-                    <li><b>Pret</b>: <?= $eveniment['pret']?></li>
+                    <li><b>Organizator</b>: <?= htmlspecialchars($eveniment['nume_organizator']) ?></li>
+                    <li><b>Pret</b>: <?= htmlspecialchars($eveniment['pret']) ?></li>
                     <li>
                         <a href="./bilet/alege-loc.php?id_eveniment=<?= $eveniment['id_eveniment'] ?>">Cumpara bilet</a>
                         <span> | </span>

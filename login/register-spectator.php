@@ -47,6 +47,8 @@
         <h1>Inregistreaza cont spectator</h1>
         <p>Completeaza formularul de mai jos</p>
         <form action="./process-register-spectator.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+            
             <label for="nume">Nume:</label>
             <input type="text" id="nume" name="nume" maxlength="80" placeholder="John Doe" required>
 

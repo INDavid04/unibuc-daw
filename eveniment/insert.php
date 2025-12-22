@@ -11,6 +11,10 @@ $mesaj = '';
 /// reCAPTCHA3: https://www.google.com/recaptcha/admin/site/741246782/setup
 
 if(isset($_POST['submit'])){ 
+    /// Securitate
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $mesaj = "CSRF token inexistent sau invalid";
+    }
     
     // Form fields validation check
     if(!empty($_POST['denumire']) && !empty($_POST['denumire_locatie']) && !empty($_POST['incepe'])){ 

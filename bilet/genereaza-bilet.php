@@ -1,17 +1,21 @@
 <?php
 session_start();
 
+require_once('../login/database.php');
+require_once('../assets/fpdf186/fpdf.php');
+
+$db = Database::getInstance()->getConnection();
+
 $eroare = null;
 
 try {
-    if (!isset($_SESSION['id_utilizator'])) {
-        throw new Exception("Trebuie sa fii autentificat pentru a vedea biletele");
+    /// Verifica daca e spectator
+    $stmt = $db->prepare("select * from spectator where id_utilizator = ?");
+    $stmt->execute([$_SESSION['id_utilizator']]);
+    $eSpectator = $stmt->fetch();
+    if (!$eSpectator) {
+        throw new Exception ("Nu aveti cont de spectator. <a href='../'>Apasa aici pentru a te intoarce acasa.</a>");
     }
-
-    require_once('../login/database.php');
-    require_once('../assets/fpdf186/fpdf.php');
-
-    $db = Database::getInstance()->getConnection();
 
     $id_bilet = $_GET['id_bilet'] ?? null;
     $id_eveniment = $_GET['id_eveniment'] ?? null;

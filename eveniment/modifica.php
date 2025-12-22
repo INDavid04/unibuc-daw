@@ -1,4 +1,65 @@
-<?php session_start(); ?>
+<?php 
+/// Securizeaza cookie-urilor de sesiune
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1); 
+ini_set('session.use_only_cookies', 1);
+
+session_start(); 
+
+/// Regenereaza ID la POST pentru a preveni Session Fixation
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_regenerate_id(true);
+}
+
+require_once '../login/database.php';
+
+$db = Database::getInstance()->getConnection();
+$eroare = null;
+
+try {
+    /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
+    $eAutentificat = $_SESSION['id_utilizator'] ?? null;
+
+    if ($eAutentificat) {
+        $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
+        $eOrganizator->execute([$_SESSION['id_utilizator']]);
+        if($eOrganizator->fetch()) {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['denumire'])) {
+                /// Securitate
+                if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                    throw new Exception("CSRF token inexistent sau invalid");
+                } 
+
+                if ($_POST['pret'] < 0) {
+                    throw new Exception("Pretul nu poate fi negativ");
+                } else {
+                    $stmt = $db->prepare("UPDATE eveniment SET denumire = ? WHERE id_eveniment = ? AND id_utilizator = ?");
+                    $stmt->execute([$_POST['denumire'], $_GET['id'], $_SESSION['id_utilizator']]);
+
+                    $stmt = $db->prepare("UPDATE eveniment SET pret = ? WHERE id_eveniment = ? AND id_utilizator = ?");
+                    $stmt->execute([$_POST['pret'], $_GET['id'], $_SESSION['id_utilizator']]);
+                    
+                    header("Location: ./");
+                    exit;
+                }
+            }
+
+            $stmt = $db->prepare("SELECT * FROM eveniment WHERE id_eveniment = ? AND id_utilizator = ?");
+            $stmt->execute([$_GET['id'], $_SESSION['id_utilizator']]);
+            $event = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$event) {
+                throw new Exception("Evenimentul nu exista sau nu ai permisiunea de a-l edita");
+            } 
+        } else {
+            throw new Exception("Spectatorii nu pot modifica evenimente");
+        }
+    } else {
+        throw new Exception("Nu sunteti autentificat");
+    }
+} catch (Exception $e) {
+    $eroare = $e->getMessage();
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -44,60 +105,23 @@
     <main>
         <h1>Modifica eveniment</h1>
         <?php 
-            require_once '../login/database.php';
-
-            $db = Database::getInstance()->getConnection();
-
-            /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
-            $eAutentificat = $_SESSION['id_utilizator'] ?? null;
-
-            if ($eAutentificat) {
-                $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
-                $eOrganizator->execute([$_SESSION['id_utilizator']]);
-                if($eOrganizator->fetch()) {
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['denumire'])) {
-                        if ($_POST['pret'] < 0) {
-                            echo "Pretul nu poate fi negativ";
-                        } else {
-                            $stmt = $db->prepare("UPDATE eveniment SET denumire = ? WHERE id_eveniment = ? AND id_utilizator = ?");
-                            $stmt->execute([$_POST['denumire'], $_GET['id'], $_SESSION['id_utilizator']]);
-
-                            $stmt = $db->prepare("UPDATE eveniment SET pret = ? WHERE id_eveniment = ? AND id_utilizator = ?");
-                            $stmt->execute([$_POST['pret'], $_GET['id'], $_SESSION['id_utilizator']]);
-                            
-                            header("Location: ./");
-                            exit;
-                        }
-                    }
-
-                    $stmt = $db->prepare("SELECT * FROM eveniment WHERE id_eveniment = ? AND id_utilizator = ?");
-                    $stmt->execute([$_GET['id'], $_SESSION['id_utilizator']]);
-                    $event = $stmt->fetch(PDO::FETCH_ASSOC);
-                    if (!$event) {
-                        echo "Evenimentul nu exista sau nu ai permisiunea de a-l edita";
-                    } else {
-                        ?>
-                            <form method="POST">
-                                <label for="denumire">Denumire noua:</label>
-                                <input type="text" name="denumire" value="<?= htmlspecialchars($event['denumire']) ?>" maxlength="80" required>
-                                
-                                <label for="pret">Pret nou:</label>
-                                <input type="number" name="pret" min="0" value="<?= htmlspecialchars($event['pret']) ?>" step="0.01">
-                                
-                                <button type="submit">Salveaza modificarile</button>
-                            </form>
-
-                            <a href="./">Intoarce-te la lista evenimentelor tale</a>
-                        <?php
-                    }
-                } else {
-                    ?>
-                        <a href="./bilet/">Spectatorii nu pot modifica evenimente</a>
-                    <?php
-                }
+            if ($eroare) {
+                echo "$eroare";
             } else {
                 ?>
-                    <a href="./login/">Nu sunteti autentificat insa va puteti face un cont in cateva secunde</a>
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+
+                        <label for="denumire">Denumire noua:</label>
+                        <input type="text" name="denumire" value="<?= htmlspecialchars($event['denumire']) ?>" maxlength="80" required>
+                        
+                        <label for="pret">Pret nou:</label>
+                        <input type="number" name="pret" min="0" value="<?= htmlspecialchars($event['pret']) ?>" step="0.01">
+                        
+                        <button type="submit">Salveaza modificarile</button>
+                    </form>
+
+                    <a href="./">Intoarce-te la lista evenimentelor tale</a>
                 <?php
             }
         ?>

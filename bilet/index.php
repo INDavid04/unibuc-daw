@@ -1,17 +1,18 @@
 <?php 
 session_start(); 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 
 require_once('../login/database.php');
+$db = Database::getInstance()->getConnection();
 
 $eroare = null;
 try {
-    if (!isset($_SESSION['id_utilizator'])) {
-        throw new Exception("Nu sunteti autentificat. ");
+    /// Verifica daca e spectator
+    $stmt = $db->prepare("select * from spectator where id_utilizator = ?");
+    $stmt->execute([$_SESSION['id_utilizator']]);
+    $eSpectator = $stmt->fetch();
+    if (!$eSpectator) {
+        throw new Exception("Nu aveti cont de spectator. <a href='../'>Apasa aici pentru a te intoarce acasa.</a>");
     } else {
-        $db = Database::getInstance()->getConnection();
-        
         /// Salveaza toate biletele in ordine descrescatoare
         $stmt = $db->prepare("
             select id_bilet
