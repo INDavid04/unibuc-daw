@@ -163,14 +163,6 @@ try {
             } else {
                 require_once('../curs-mail/class.phpmailer.php');
 
-                $stmt = $db->prepare("
-                    select *
-                    from utilizator
-                    where id_utilizator = ?
-                ");
-                $stmt->execute([$_SESSION['id_utilizator']]);
-                $utilizator = $stmt->fetch();
-
                 $phpmailerError = null;
                 $mail = new PHPMailer(true); 
 
@@ -199,7 +191,7 @@ try {
                     /// Continut
                     $mail->isHTML(true);
                     $mail->Subject = 'Biletul #' . $id_bilet;
-                    $mail->Body = "Buna ziua, " . htmlspecialchars($utilizator['nume']) . "<br><br>Am o veste buna pentru tine, anume ca s-a trimis cu succes biletul in format pdf.<br><br>Zi minunata,<br><br>David";
+                    $mail->Body = "Buna ziua, " . htmlspecialchars($_POST['nume']) . "<br><br>Am o veste buna pentru tine, anume ca s-a trimis cu succes biletul in format pdf.<br><br>Zi minunata,<br><br>David";
                     $mail->AltBody = 'Din pacate nu puteti vedea continutul mailului.'; 
                     
                     $mail->Send();
