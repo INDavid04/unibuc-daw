@@ -112,7 +112,7 @@ if (!isset($_SESSION['csrf_token'])) {
                     <li>
                         <a href="./bilet/alege-loc.php?id_eveniment=<?= $eveniment['id_eveniment'] ?>">Cumpara bilet</a>
                         <span> | </span>
-                        <a href="./traseu/">Vezi traseul</a>
+                        <a href="./traseu/index.php?id_eveniment=<?= $eveniment['id_eveniment'] ?>">Vezi traseul</a>
                     </li>
                 </ul>
             </li>

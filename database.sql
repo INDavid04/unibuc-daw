@@ -161,3 +161,30 @@ add column pret float not null;
 alter table locatie
 add column latitudine float (10, 6),
 add column longitudine float (10, 6);
+
+-- Actualizeaza coordonatele pentru Palatul Parlamentului
+update locatie 
+set latitudine = 44.4268, longitudine = 26.0873
+where id_locatie = 1;
+
+-- Actualizeaza coordonatele pentru Arena Nationala
+update locatie 
+set latitudine = 44.4378, longitudine = 26.1523
+where id_locatie = 4;
+
+-- Creeaza tabelul traseu
+create table traseu (
+    id_traseu int auto_increment primary key,
+    id_eveniment int not null,
+    ip_vizitator varchar(80),
+    oras varchar(80),
+    data_generare datetime default current_timestamp,
+
+    constraint fk_eveniment_to_traseu
+    foreign key (id_eveniment)
+    references eveniment(id_eveniment)
+    on delete cascade
+);
+
+-- Adauga si Arena Nationala ca locatie a evenimentului #1 Seara de colide
+insert into eveniment_locatie (id_eveniment, id_locatie) values (1, 4);
