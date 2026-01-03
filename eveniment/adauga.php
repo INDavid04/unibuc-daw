@@ -58,20 +58,27 @@
                 $eOrganizator->execute([$_SESSION['id_utilizator']]);
                 if ($eOrganizator->fetch()) {
                     ?>
-                        <form action="./insert.php" method="POST">
+                        <form action="./insert.php" method="POST" id="formEveniment">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
 
                             <label for="denumire">Denumire:</label>
                             <input type="text" name="denumire" required>
 
                             <label for="denumire_locatie">Locatie:</label>
-                            <input type="text" name="denumire_locatie" required>
+                            <div id="autocomplete-wrapper">
+                                <input type="text" id="autocomplete" name="denumire_locatie" placeholder="Palatul Parlamentului, Bucuresti" autocomplete="off" required>
+                                <div id="suggestions" class="autocomplete-suggestions"></div>
+                                <div id="loading" class="loading-spinner">Caut locatia...</div>
+                            </div>
 
-                            <label for="denumire_judet">Judet (optional):</label>
-                            <input type="text" name="denumire_judet">
+                            <input type="hidden" id="latitudine" name="latitudine">
+                            <input type="hidden" id="longitudine" name="longitudine">
 
-                            <label for="denumire_tara">Tara (optional):</label>
-                            <input type="text" name="denumire_tara">
+                            <label for="denumire_judet">Judet (se completeaza automat):</label>
+                            <input type="text" id="denumire_judet" name="denumire_judet" readonly>
+
+                            <label for="denumire_tara">Tara (se completeaza automat):</label>
+                            <input type="text" id="denumire_tara" name="denumire_tara" readonly>
 
                             <label for="incepe">Incepe:</label>
                             <input type="datetime-local" name="incepe" min="<?php echo date('Y-m-d\TH:i');?>" required>
@@ -114,5 +121,154 @@
             <p>Made with love by <a href="http://indavid04.github.io/portofolio" target="_blank" rel="noopener noreferrer">INDavid04</a></p>
         </div>
     </footer>
+
+    <!-- Nominatim Autocomplete Script -->
+    <script>
+        let searchTimeout;
+        const input = document.getElementById('autocomplete');
+        const suggestionsDiv = document.getElementById('suggestions');
+        const loadingDiv = document.getElementById('loading');
+
+        // Functie pentru cautare locatii cu Nominatim
+        async function cautaLocatii(query) {
+            if (query.length < 3) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            loadingDiv.classList.add('active');
+            suggestionsDiv.style.display = 'none';
+
+            try {
+                // Nominatim API - gratuit, fara limita
+                const url = `https://nominatim.openstreetmap.org/search?` + 
+                           `format=json&` +
+                           `q=${encodeURIComponent(query)}&` +
+                           `countrycodes=ro,md,bg,hu&` + // Limiteaza la Romania si tari vecine
+                           `limit=8&` +
+                           `addressdetails=1&` +
+                           `accept-language=ro`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'User-Agent': 'EventManager/1.0' // Nominatim cere un User-Agent
+                    }
+                });
+
+                const data = await response.json();
+                
+                loadingDiv.classList.remove('active');
+                
+                if (data && data.length > 0) {
+                    afiseazaSugestii(data);
+                } else {
+                    suggestionsDiv.innerHTML = '<div class="autocomplete-suggestion">Nu s-au gasit rezultate</div>';
+                    suggestionsDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Eroare cautare:', error);
+                loadingDiv.classList.remove('active');
+                suggestionsDiv.innerHTML = '<div class="autocomplete-suggestion">Eroare la cautare. Incercati din nou.</div>';
+                suggestionsDiv.style.display = 'block';
+            }
+        }
+
+        // Afiseaza sugestiile
+        function afiseazaSugestii(locations) {
+            suggestionsDiv.innerHTML = '';
+            
+            locations.forEach(location => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-suggestion';
+                
+                // Extrage informatii relevante
+                const name = location.name || location.display_name.split(',')[0];
+                const address = location.display_name;
+                
+                div.innerHTML = `
+                    <div class="suggestion-name">${name}</div>
+                    <div class="suggestion-address">${address}</div>
+                `;
+                
+                div.addEventListener('click', function() {
+                    selecteazaLocatie(location);
+                });
+                
+                suggestionsDiv.appendChild(div);
+            });
+            
+            suggestionsDiv.style.display = 'block';
+        }
+
+        // Selecteaza o locatie din lista
+        function selecteazaLocatie(location) {
+            // Completeaza campul cu numele locatiei
+            input.value = location.display_name;
+            
+            // Seteaza coordonatele
+            document.getElementById('latitudine').value = location.lat;
+            document.getElementById('longitudine').value = location.lon;
+            
+            // Extrage judetul si tara
+            const address = location.address;
+            let judet = '';
+            let tara = '';
+            
+            if (address) {
+                // Judet / County / State
+                judet = address.county || address.state || address.province || '';
+                // Tara
+                tara = address.country || 'Romania';
+            }
+            
+            document.getElementById('denumire_judet').value = judet;
+            document.getElementById('denumire_tara').value = tara;
+            
+            // Ascunde sugestiile
+            suggestionsDiv.style.display = 'none';
+            
+            console.log('Locatie selectata:', {
+                nume: location.display_name,
+                lat: location.lat,
+                lon: location.lon,
+                judet: judet,
+                tara: tara
+            });
+        }
+
+        // Event listener pentru input
+        input.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            // Sterge coordonatele daca utilizatorul modifica textul
+            document.getElementById('latitudine').value = '';
+            document.getElementById('longitudine').value = '';
+            
+            // Debounce - asteapta 500ms dupa ce utilizatorul termina de scris
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                cautaLocatii(query);
+            }, 500);
+        });
+
+        // Inchide sugestiile cand se da click in afara
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('autocomplete-wrapper').contains(e.target)) {
+                suggestionsDiv.style.display = 'none';
+            }
+        });
+
+        // Validare inainte de submit
+        document.getElementById('formEveniment').addEventListener('submit', function(e) {
+            const lat = document.getElementById('latitudine').value;
+            const lng = document.getElementById('longitudine').value;
+            
+            if (!lat || !lng) {
+                e.preventDefault();
+                alert('Va rugam selectati o locatie din lista de sugestii pentru a obtine coordonatele!');
+                document.getElementById('autocomplete').focus();
+            }
+        });
+    </script>
 </body>
 </html>

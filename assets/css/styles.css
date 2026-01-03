@@ -191,4 +191,43 @@ footer {
   background-color: #faebd7;
   color: #333;
   text-align: center;
+}
+
+#autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+#suggestions {
+  display: none;
+  position: absolute;
+  padding: 1rem;
+  width: 100%;
+  border: 1px solid #faebd7;
+  max-height: 20rem;
+  overflow-y: auto;
+  z-index: 1;
+  background-color: #333;
+  color: #faebd7;
+  cursor: pointer;
+}
+
+#suggestions:hover, #sugestions:focus {
+  background-color: #faebd7;
+  color: #333;
+}
+
+#loading {
+  display: hidden;
+  padding: 1rem;
+  color: #faebd7;
+}
+
+#loading.active {
+  display: block;
+}
+
+#latitudine, #longitudine {
+  background-color: #faebd7;
+  color: #333;
 }/*# sourceMappingURL=styles.css.map */

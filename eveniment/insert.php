@@ -83,15 +83,15 @@ if(isset($_POST['submit'])){
                                     $id_judet = $db->lastInsertId();
                                 }
 
-                                /// Insereaza denumire_locatie in locatie
+                                /// Insereaza denumire_locatie, latitudine, longitudine in locatie
                                 $stmt = $db->prepare("select id_locatie from locatie where denumire = ?");
                                 $stmt->execute([$_POST['denumire_locatie']]);
                                 $locatie = $stmt->fetch();
                                 if ($locatie) {
                                     $id_locatie = $locatie['id_locatie'];
                                 } else {
-                                    $stmt = $db->prepare("insert into locatie (denumire, id_judet) values (?, ?)");
-                                    $stmt->execute([$_POST['denumire_locatie'], $id_judet]);
+                                    $stmt = $db->prepare("insert into locatie (denumire, id_judet, latitudine, longitudine) values (?, ?, ?, ?)");
+                                    $stmt->execute([$_POST['denumire_locatie'], $id_judet, $_POST['latitudine'], $_POST['longitudine']]);
                                     $id_locatie = $db->lastInsertId();
                                 }
                                 

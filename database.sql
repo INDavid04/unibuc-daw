@@ -188,3 +188,6 @@ create table traseu (
 
 -- Adauga si Arena Nationala ca locatie a evenimentului #1 Seara de colide
 insert into eveniment_locatie (id_eveniment, id_locatie) values (1, 4);
+
+-- Adauga un index pentru cautari mai rapide pe coordonate
+create index idx_coordonate on locatie(latitudine, longitudine);

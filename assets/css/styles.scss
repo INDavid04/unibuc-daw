@@ -38,3 +38,11 @@ main { margin: 1rem 0; max-width: 70ch; min-height: 100vh; padding: 0.5rem;
             .loc:hover, .loc:focus { background-color: #00bfff; color: #333; }
 
 footer { padding: 0.5rem; background-color: #faebd7; color: #333; text-align: center; }
+
+#autocomplete-wrapper { position: relative; width: 100%; }
+    #autocomplete {  }
+    #suggestions { display: none; position: absolute; padding: 1rem; width: 100%; border: 1px solid #faebd7; max-height: 20rem; overflow-y: auto; z-index: 1; background-color: #333; color: #faebd7; cursor: pointer; }
+    #suggestions:hover, #sugestions:focus { background-color: #faebd7; color: #333; }
+    #loading { display: hidden; padding: 1rem; color: #faebd7; }
+    #loading.active { display: block; }
+#latitudine, #longitudine { background-color: #faebd7; color: #333; }
