@@ -1,70 +1,14 @@
-<?php
-// Securizarea cookie-urilor de sesiune (HTTPOnly și Secure)
-ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1); 
-ini_set('session.use_only_cookies', 1);
-
-session_start();
-
-require_once './database.php';
-$pdo = Database::getInstance()->getConnection();
-
-$id_utilizator = $_SESSION['id_utilizator'] ?? null;
-if (!$id_utilizator) {
-    header("Location: ../");
-    exit;
-}
-
-/// Securitate
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die("Csrf toke invalid sau inexistent");
-    }
-
-    /// Regenerare ID pentru a preveni Session Fixation
-    session_regenerate_id(true);
-
-    /// Actualizeaza nume
-    if (isset($_POST['actualizeazaNume'])) {
-        $nume_nou = $_POST['nume'];
-        $stmt = $pdo->prepare("update utilizator set nume=? where id_utilizator=?");
-        $stmt->execute([$nume_nou, $id_utilizator]);
-        
-        $_SESSION['nume'] = $nume_nou;
-        
-        header("Location: ../");
-        exit;
-    }
-
-    /// Actualizeaza parola
-    if (isset($_POST['actualizeazaParola'])) {
-        $parola_noua = $_POST['parola'];
-
-        $hashed = password_hash($parola_noua, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("update utilizator set parola=? where id_utilizator=?");
-        $stmt->execute([$hashed, $id_utilizator]);
-        header("Location: ./logout.php");
-        exit;
-    }
-
-    /// Sterge contul
-    if (isset($_POST['sterge'])) {
-        $stmt = $pdo->prepare("DELETE FROM utilizator WHERE id_utilizator=?");
-        $stmt->execute([$id_utilizator]);
-        session_destroy();
-        header("Location: ../");
-        exit;
-    }
-}
-?>
+<?php session_start(); ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IND | DAW Detalii utilizator</title>
+    <title>IND | DAW Contact</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
+	<!-- Captcha -->
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
@@ -100,43 +44,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </header>
 
     <main>
-        <h1>Despre <?= htmlspecialchars($_SESSION['nume']) ?></h1>
-
-        <h2>Actualizeaza informatiile</h2>
-        <form method="POST">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
-
-            <label>Nume nou:</label>
-            <input type="text" name="nume">
-
-            <button type="submit" name="actualizeazaNume">Actualizeaza nume</button>
-        </form>
-        <form method="POST">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
-
-            <label>Parola noua:</label>
-            <input type="password" name="parola">
-            
-            <button type="submit" name="actualizeazaParola">Actualizeaza parola</button>
-        </form>
-
-        <h2>Sterge contul</h2>
-        <form method="POST" onsubmit="return confirm('Sigur vrei sa stergi contul?')">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
-            
-            <button type="submit" name="sterge">Sterge cont</button>
-        </form>
-
-
-        <h2>Logout</h2>
-        <a href="./logout.php">Iesi din cont</a>
+        <div id="central">
+			<div class="content">
+				<h1>Contact</h1>
+				<p>Completeaza formularul:</p>
+				<div id="message">
+					<form action="verify-recaptcha.php" method="post">
+						<div class="label">Nume si prenume:</div>
+							<div class="field">
+								<input type="text" id="name" name="name" class="required" aria-required="true" required>
+							</div>
+						<div class="label">Email:</div>
+						<div class="field">			
+							<input type="email" id="email" name="email" class="required email" aria-required="true" required>
+						</div>
+						<div class="label">Mesaj:</div>
+						<div class="field">			
+							<textarea id="comment-content" name="content"></textarea>			
+						</div>  
+						<div class="g-recaptcha" data-sitekey="6LdzHyYsAAAAAHN7Oy80oj1I_NE_xqKaT1othHDe"></div>
+						<input class="btn btn-info" type="submit" name="submit" value="SUBMIT" >
+					</form>
+				</div>		
+			</div>
+		</div>
     </main>
 
     <footer>
         <h2>Mergi catre</h2>
         <ul>
             <li><a href="../">Pagina principala</a></li>
-            <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
+            <li><a href="../curs-descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
             <li><a href="../curs-autentificare-prin-imagine/">Tema cu autentificare prin imagine</a></li>
             <li><a href="../curs-generare-document/" target="_blank" rel="noopener noreferrer">Tema cu generare document</a></li>
             <li><a href="../curs-contact/">Tema cu captcha pe formularul de contact</a></li>

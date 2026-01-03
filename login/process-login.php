@@ -94,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="../curs-autentificare-prin-imagine/">Tema cu autentificare prin imagine</a></li>
             <li><a href="../curs-generare-document/" target="_blank" rel="noopener noreferrer">Tema cu generare document</a></li>
             <li><a href="../curs-contact/">Tema cu captcha pe formularul de contact</a></li>
+            <li><a href="../contact/">Contact</a></li>
         </ul>
         <div>
             <p>All rights reserved &copy; 2025</p>

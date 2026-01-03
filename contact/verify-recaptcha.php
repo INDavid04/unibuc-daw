@@ -1,70 +1,14 @@
-<?php
-// Securizarea cookie-urilor de sesiune (HTTPOnly și Secure)
-ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1); 
-ini_set('session.use_only_cookies', 1);
-
-session_start();
-
-require_once './database.php';
-$pdo = Database::getInstance()->getConnection();
-
-$id_utilizator = $_SESSION['id_utilizator'] ?? null;
-if (!$id_utilizator) {
-    header("Location: ../");
-    exit;
-}
-
-/// Securitate
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die("Csrf toke invalid sau inexistent");
-    }
-
-    /// Regenerare ID pentru a preveni Session Fixation
-    session_regenerate_id(true);
-
-    /// Actualizeaza nume
-    if (isset($_POST['actualizeazaNume'])) {
-        $nume_nou = $_POST['nume'];
-        $stmt = $pdo->prepare("update utilizator set nume=? where id_utilizator=?");
-        $stmt->execute([$nume_nou, $id_utilizator]);
-        
-        $_SESSION['nume'] = $nume_nou;
-        
-        header("Location: ../");
-        exit;
-    }
-
-    /// Actualizeaza parola
-    if (isset($_POST['actualizeazaParola'])) {
-        $parola_noua = $_POST['parola'];
-
-        $hashed = password_hash($parola_noua, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("update utilizator set parola=? where id_utilizator=?");
-        $stmt->execute([$hashed, $id_utilizator]);
-        header("Location: ./logout.php");
-        exit;
-    }
-
-    /// Sterge contul
-    if (isset($_POST['sterge'])) {
-        $stmt = $pdo->prepare("DELETE FROM utilizator WHERE id_utilizator=?");
-        $stmt->execute([$id_utilizator]);
-        session_destroy();
-        header("Location: ../");
-        exit;
-    }
-}
-?>
+<?php session_start(); ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IND | DAW Detalii utilizator</title>
+    <title>IND | DAW Formular de contact trimis</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
+	<!-- Captcha -->
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
@@ -100,48 +44,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </header>
 
     <main>
-        <h1>Despre <?= htmlspecialchars($_SESSION['nume']) ?></h1>
+        <h1>Formularul de contact a fost trimis</h1>
+		<?php 
+			/// reCAPTCHA:
 
-        <h2>Actualizeaza informatiile</h2>
-        <form method="POST">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+			$returnMsg = ''; 
+			
+			if(isset($_POST['submit'])){ 
+				
+				// Form fields validation check
+				if(!empty($_POST['name']) && !empty($_POST['email'])){ 
+					
+					// reCAPTCHA checkbox validation
+					if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){ 
+						// Google reCAPTCHA API secret key 
+						$secret_key = '6LdzHyYsAAAAAIPzwuBD3xVp1RLY1iXCT4jtQ2mk'; 
+						
+						// reCAPTCHA response verification
+						$verify_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret_key.'&response='.$_POST['g-recaptcha-response']); 
+						
+						// Decode reCAPTCHA response 
+						$verify_response = json_decode($verify_captcha); 
+						
+						// Check if reCAPTCHA response returns success 
+						if($verify_response->success){ 
+							
+							$name = $_POST['name']; 
+							$email = $_POST['email']; 
+							$message = $_POST['content'];
+						
+							// Mail
+							require_once('../curs-mail/class.phpmailer.php');
+							
+							$username = 'contact@dirimia.daw.ssmr.ro';
+							$password = 'daw1234';
+							
+							$mailBody = "User Name: " . $name . "\n";
+							$mailBody .= "User Email: " . $email . "\n";
+							$mailBody .= "Message: " . $message . "\n";
+							
+							$mail = new PHPMailer(true); 
 
-            <label>Nume nou:</label>
-            <input type="text" name="nume">
+							$mail->IsSMTP();
 
-            <button type="submit" name="actualizeazaNume">Actualizeaza nume</button>
-        </form>
-        <form method="POST">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+							try {
+							
+							$mail->SMTPDebug  = 3;                     
+							$mail->SMTPAuth   = true; 
 
-            <label>Parola noua:</label>
-            <input type="password" name="parola">
-            
-            <button type="submit" name="actualizeazaParola">Actualizeaza parola</button>
-        </form>
+							$toEmail='contact@dirimia.daw.ssmr.ro';
+							$nume='DAW Contact';
 
-        <h2>Sterge contul</h2>
-        <form method="POST" onsubmit="return confirm('Sigur vrei sa stergi contul?')">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
-            
-            <button type="submit" name="sterge">Sterge cont</button>
-        </form>
+							$mail->SMTPSecure = "tls";                 
+							$mail->Host       = "mail.dirimia.daw.ssmr.ro";      
+							$mail->Port       = 587;                   
+							$mail->Username   = $username;  			
+							$mail->Password   = $password;            
+							$mail->AddReplyTo($email, $name);
+							$mail->AddAddress($toEmail, $nume);
+							$mail->addCustomHeader("BCC: ".$email);
+							
+							$mail->SetFrom($username, 'Formular Contact');
+							$mail->From = $username;
+							$mail->Subject = 'Formular contact';
+							$mail->AltBody = 'To view this post you need a compatible HTML viewer!'; 
+							$mail->MsgHTML($mailBody);
+							
+							$mail->Send();
+							
+							$returnMsg = 'Your message has been submitted successfully.'; 
+							
+							} catch (phpmailerException $e) {
+								echo $e->errorMessage(); //error from PHPMailer
+							}
+							
+						} 
+					} else { 
+						
+						$returnMsg = 'Please check the CAPTCHA box.'; 
+					} 
+				} else { 
+					$returnMsg = 'Please fill all the required fields.'; 
+				} 
+			} 
 
+			echo $returnMsg;
 
-        <h2>Logout</h2>
-        <a href="./logout.php">Iesi din cont</a>
+		?>
     </main>
 
     <footer>
         <h2>Mergi catre</h2>
         <ul>
             <li><a href="../">Pagina principala</a></li>
-            <li><a href="../descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
+            <li><a href="../curs-descrierea-aplicatiei/">Descrierea aplicatiei</a></li>
             <li><a href="../curs-autentificare-prin-imagine/">Tema cu autentificare prin imagine</a></li>
             <li><a href="../curs-generare-document/" target="_blank" rel="noopener noreferrer">Tema cu generare document</a></li>
             <li><a href="../curs-contact/">Tema cu captcha pe formularul de contact</a></li>
-            <li><a href="../contact/">Contact</a></li>
-        </ul>
+			<li><a href="../contact/">Contact</a></li>
+		</ul>
         <div>
             <p>All rights reserved &copy; 2025</p>
             <p>Made with love by <a href="http://indavid04.github.io/portofolio" target="_blank" rel="noopener noreferrer">INDavid04</a></p>
@@ -149,3 +150,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </footer>
 </body>
 </html>
+
