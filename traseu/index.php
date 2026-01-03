@@ -227,9 +227,15 @@ if (!empty($locatii)) {
                 $pdf->Ln(5);
             }
 
+            ///
             /// Scrie si traseul sub forma de instructiuni tip text cu ajutorul osrm api
+            ///
+
+            /// Integrare informatie externa (api extern router.project-osrm.org)
             $osrmApi = "http://router.project-osrm.org/route/v1/driving/{$lonUser},{$latUser};{$loc['longitudine']},{$loc['latitudine']}?overview=false&steps=true";
             $routeJson = @file_get_contents($osrmApi);
+            
+            /// Parsare
             $routeData = $routeJson ? json_decode($routeJson, true) : null;
 
             if (isset($routeData['routes'][0]['legs'][0]['steps'])) {

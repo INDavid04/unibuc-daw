@@ -22,6 +22,15 @@ try {
         ");
         $stmt->execute([$_SESSION['id_utilizator']]);
         $bilete = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        /// Pentru a afisa mailul utilizatorului in formular
+        $stmt = $db->prepare("
+            select *
+            from utilizator
+            where id_utilizator = ?
+        ");
+        $stmt->execute([$_SESSION['id_utilizator']]);
+        $utilizator = $stmt->fetch();
     }
 } catch (Exception $e) {
     $eroare = $e->getMessage();
@@ -79,6 +88,21 @@ try {
                     echo "Nu aveti niciun bilet cumparat";
                 } else {
                     ?>
+                        <p>Completeaza formularul pentru a primi biletul pe mail sau vezi direct in lista de dupa acest formular</p>
+                        <form action="./trimite-bilet.php" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+                            
+                            <label for="nume">Nume:</label>
+                            <input type="text" name="nume" id="nume" value="<?= $_SESSION['nume']; ?>" required>
+                            
+                            <label for="mail">Mail:</label>
+                            <input type="email" name="mail" id="mail" value="<?= $utilizator['mail'] ?>" required>
+
+                            <label for="id_bilet">ID Bilet:</label>
+                            <input type="number" name="id_bilet" id="id_bilet" required>
+
+                            <button type="submit" name="submit">Trimite biletul pe mail</button>
+                        </form>
                         <p>Biletele incepand cu cele mai recente</p>
                         <ol>
                             <?php
