@@ -9,3 +9,4 @@ This is a repository used for web application development discipline in unibuc c
 1. [Link to Tema 1: Descrierea aplicatiei web](https://github.com/INDavid04/unibuc-daw/releases/tag/daw)
 2. [Link to Tema 2: Create, read, update, delete](https://github.com/INDavid04/unibuc-daw/releases/tag/crud)
 3. [Link to Tema 3: Autentificare si securizare](https://github.com/INDavid04/unibuc-daw/releases/tag/securizare)
+4. [Link to Tema 4: Integrare module](https://github.com/INDavid04/unibuc-daw/releases/tag/module)
