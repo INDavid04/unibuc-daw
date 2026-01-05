@@ -25,7 +25,7 @@ header { display: flex; flex-direction: column; align-items: center; background-
         nav ul { display: flex; flex-direction: row; gap: 0.5rem; margin: 0; padding: 0;  }
         nav li { padding: 1rem 0; }
 
-main { margin: 1rem 0; max-width: 70ch; min-height: 100vh; padding: 0.5rem;
+main { margin: 1rem auto; max-width: 70ch; min-height: 100vh; padding: 0.5rem;
     @media(min-width: 480px) { padding: 0.5rem 4rem; }
     @media(min-width: 720px) { padding: 0.5rem 8rem; }
 }
@@ -39,6 +39,7 @@ main { margin: 1rem 0; max-width: 70ch; min-height: 100vh; padding: 0.5rem;
 
 footer { padding: 0.5rem; background-color: #faebd7; color: #333; text-align: center; }
 
+/// Coordonate dupa locatie
 #autocomplete-wrapper { position: relative; width: 100%; }
     #autocomplete {  }
     #suggestions { display: none; position: absolute; padding: 1rem; width: 100%; border: 1px solid #faebd7; max-height: 20rem; overflow-y: auto; z-index: 1; background-color: #333; color: #faebd7; cursor: pointer; }
@@ -46,3 +47,9 @@ footer { padding: 0.5rem; background-color: #faebd7; color: #333; text-align: ce
     #loading { display: hidden; padding: 1rem; color: #faebd7; }
     #loading.active { display: block; }
 #latitudine, #longitudine { background-color: #faebd7; color: #333; }
+
+/// Analytics
+#chart_container { box-sizing: border-box; margin: 1rem 0; padding: 1rem; border: 1px solid #faebd7; border-radius: 2rem; width: 100%; overflow-x: auto; }
+    #chart_div { width: 100%; min-width: 16rem; min-height: 20rem; }
+    #chart_container::-webkit-scrollbar { height: 0.5rem; }
+    #chart_container::-webkit-scrollbar-thumb { background-color: #faebd7; border-radius: 0.25rem; }

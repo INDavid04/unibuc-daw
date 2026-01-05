@@ -88,8 +88,13 @@ if (!isset($_SESSION['csrf_token'])) {
 
         <h2>Tema 3: Autentificare si securizare acces <br> (22 Decembrie 2025, 23:33)</h2>
         <a href="./login">Intra in cont</a>
+
+        <h2>Tema 4: Integrare module (email, export, integrare informatie externa)</h2>
+        <p>Email: Creeaza cont / Autentifica-te cu un cont de spectator, vezi biletele tale, completeaza formularul</p>
+        <p>TODO</p>
         
         <h2>Evenimente</h2>
+        <a href="./analiza-traseu/">Vezi cele mai cautate 10 evenimente</a>
         <?php
             $pdo = Database::getInstance()->getConnection();
 

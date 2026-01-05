@@ -117,7 +117,7 @@ nav li {
 }
 
 main {
-  margin: 1rem 0;
+  margin: 1rem auto;
   max-width: 70ch;
   min-height: 100vh;
   padding: 0.5rem;
@@ -230,4 +230,29 @@ footer {
 #latitudine, #longitudine {
   background-color: #faebd7;
   color: #333;
+}
+
+#chart_container {
+  box-sizing: border-box;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #faebd7;
+  border-radius: 2rem;
+  width: 100%;
+  overflow-x: auto;
+}
+
+#chart_div {
+  width: 100%;
+  min-width: 16rem;
+  min-height: 20rem;
+}
+
+#chart_container::-webkit-scrollbar {
+  height: 0.5rem;
+}
+
+#chart_container::-webkit-scrollbar-thumb {
+  background-color: #faebd7;
+  border-radius: 0.25rem;
 }/*# sourceMappingURL=styles.css.map */
