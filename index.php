@@ -90,8 +90,31 @@ if (!isset($_SESSION['csrf_token'])) {
         <a href="./login">Intra in cont</a>
 
         <h2>Tema 4: Integrare module (email, export, integrare informatie externa)</h2>
-        <p>Email: Creeaza cont / Autentifica-te cu un cont de spectator, vezi biletele tale, completeaza formularul</p>
-        <p>TODO</p>
+        <?php
+            require_once './login/database.php';
+            $db = Database::GetInstance()->getConnection();
+
+            /// Daca avem ceva in variabila inseamna ca utilizatorul este autentificat
+            $eAutentificat = $_SESSION['id_utilizator'] ?? null;
+            
+            if ($eAutentificat) {
+                $eOrganizator = $db->prepare("select * from organizator where id_utilizator=?");
+                $eOrganizator->execute([$_SESSION['id_utilizator']]);
+                if(!$eOrganizator->fetch()) {
+                    ?>
+                        <a href="./bilet/">Trimite bilet pe mail</a>
+                    <?php
+                } else {
+                    ?>
+                        <a href="./login/">Creeaza cont / autentifica-te ca spectator pentru a trimite un bilet pe mail</a>
+                    <?php
+                }
+            } else {
+                ?>
+                    <a href="./login/">Creeaza cont / autentifica-te ca spectator pentru a trimite un bilet pe mail</a>
+                <?php
+            }
+        ?>
         
         <h2>Evenimente</h2>
         <a href="./analiza-traseu/">Vezi cele mai cautate 10 evenimente</a>
